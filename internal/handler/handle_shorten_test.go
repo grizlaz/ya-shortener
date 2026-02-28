@@ -32,6 +32,7 @@ func TestHandleShorten(t *testing.T) {
 
 		body, err := io.ReadAll(recorder.Result().Body)
 		recorder.Result().Body.Close()
+		c.Request().Body.Close()
 
 		require.NoError(t, err)
 		assert.NotEmpty(t, body)
