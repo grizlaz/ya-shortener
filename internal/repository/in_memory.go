@@ -2,36 +2,33 @@ package repository
 
 import (
 	"context"
-	"sync"
 
 	"github.com/grizlaz/ya-shortener/internal/model"
 )
 
 type inMemory struct {
-	m sync.Map
+	m map[string]*model.Shortening
 }
 
 func NewInMemory() *inMemory {
-	return &inMemory{}
+	return &inMemory{m: make(map[string]*model.Shortening)}
 }
 
 func (i *inMemory) Put(_ context.Context, shortening model.Shortening) (*model.Shortening, error) {
-	if _, exist := i.m.Load(shortening.Identifier); exist {
+	if _, exist := i.m[shortening.Identifier]; exist {
 		return nil, model.ErrIdentifierExists
 	}
 
-	i.m.Store(shortening.Identifier, shortening)
+	i.m[shortening.Identifier] = &shortening
 
 	return &shortening, nil
 }
 
 func (i *inMemory) Get(_ context.Context, identifier string) (*model.Shortening, error) {
-	v, ok := i.m.Load(identifier)
+	v, ok := i.m[identifier]
 	if !ok {
 		return nil, model.ErrNotFound
 	}
 
-	shortening := v.(model.Shortening)
-
-	return &shortening, nil
+	return v, nil
 }

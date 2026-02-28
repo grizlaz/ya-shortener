@@ -36,7 +36,6 @@ func (s *Server) setupRouter() {
 	s.e.Any("/*", func(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "wrong url")
 	})
-
 }
 
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
