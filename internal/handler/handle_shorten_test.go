@@ -26,6 +26,7 @@ func TestHandleShorten(t *testing.T) {
 			c         = e.NewContext(request, recorder)
 		)
 		request.Header.Set(echo.HeaderContentType, echo.MIMETextPlainCharsetUTF8)
+		request.Body.Close()
 
 		require.NoError(t, handler(c))
 		assert.Equal(t, http.StatusCreated, recorder.Code)
