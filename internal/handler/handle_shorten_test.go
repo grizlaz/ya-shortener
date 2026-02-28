@@ -30,8 +30,8 @@ func TestHandleShorten(t *testing.T) {
 		require.NoError(t, handler(c))
 		assert.Equal(t, http.StatusCreated, recorder.Code)
 
-		defer recorder.Result().Body.Close()
 		body, err := io.ReadAll(recorder.Result().Body)
+		recorder.Result().Body.Close()
 
 		require.NoError(t, err)
 		assert.NotEmpty(t, body)
