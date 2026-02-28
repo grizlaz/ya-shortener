@@ -11,7 +11,7 @@ import (
 
 func TestShorten(t *testing.T) {
 	var id uint32 = 1024
-	resForId := "sw"
+	resForID := "sw"
 	t.Run("returns short identifier", func(t *testing.T) {
 		type testCase struct {
 			id       uint32
@@ -21,7 +21,7 @@ func TestShorten(t *testing.T) {
 		testCases := []testCase{
 			{
 				id:       id,
-				expected: resForId,
+				expected: resForID,
 			},
 			{
 				id:       0,
@@ -37,7 +37,7 @@ func TestShorten(t *testing.T) {
 
 	t.Run("is idempotent", func(t *testing.T) {
 		for i := 0; i < 100; i++ {
-			assert.Equal(t, resForId, service.Shorten(id))
+			assert.Equal(t, resForID, service.Shorten(id))
 		}
 	})
 
