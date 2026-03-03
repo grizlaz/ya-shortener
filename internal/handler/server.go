@@ -14,11 +14,13 @@ type CloseFunc func(context.Context) error
 type Server struct {
 	e         *echo.Echo
 	shortener *service.Service
+	baseURL   string
 }
 
-func NewServer(shortener *service.Service) *Server {
+func NewServer(shortener *service.Service, baseURL string) *Server {
 	s := &Server{
 		shortener: shortener,
+		baseURL:   baseURL,
 	}
 	s.setupRouter()
 
@@ -31,7 +33,7 @@ func (s *Server) setupRouter() {
 
 	s.e.Pre(middleware.RemoveTrailingSlash())
 
-	s.e.POST("/", HandleShorten(s.shortener))
+	s.e.POST("/", HandleShorten(s.shortener, s.baseURL))
 	s.e.GET("/:identifier", HandleRedirect(s.shortener))
 	s.e.Any("/*", func(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "wrong url")

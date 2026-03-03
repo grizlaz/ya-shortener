@@ -15,8 +15,8 @@ func main() {
 	config := config.Get()
 	shorteningStorage := repository.NewInMemory()
 	shortener := service.NewService(shorteningStorage)
-	srv := handler.NewServer(shortener)
-	if err := http.ListenAndServe(config.A, srv); !errors.Is(err, http.ErrServerClosed) {
+	srv := handler.NewServer(shortener, config.BaseURL)
+	if err := http.ListenAndServe(config.ServerAddress, srv); !errors.Is(err, http.ErrServerClosed) {
 		log.Fatalf("error running server: %v", err)
 	}
 }
