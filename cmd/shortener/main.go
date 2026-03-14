@@ -7,11 +7,15 @@ import (
 
 	"github.com/grizlaz/ya-shortener/internal/config"
 	"github.com/grizlaz/ya-shortener/internal/handler"
+	"github.com/grizlaz/ya-shortener/internal/logger"
 	"github.com/grizlaz/ya-shortener/internal/repository"
 	"github.com/grizlaz/ya-shortener/internal/service"
 )
 
 func main() {
+	if err := logger.Initialize("info"); err != nil {
+		panic(err)
+	}
 	config := config.Get()
 	shorteningStorage := repository.NewInMemory()
 	shortener := service.NewService(shorteningStorage)

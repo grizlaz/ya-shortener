@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/grizlaz/ya-shortener/internal/logger"
 	"github.com/grizlaz/ya-shortener/internal/service"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -32,6 +33,7 @@ func (s *Server) setupRouter() {
 	s.e.HideBanner = true
 
 	s.e.Pre(middleware.RemoveTrailingSlash())
+	s.e.Use(logger.WithLogging())
 
 	s.e.POST("/", HandleShorten(s.shortener, s.baseURL))
 	s.e.GET("/:identifier", HandleRedirect(s.shortener))
