@@ -24,7 +24,7 @@ type shortenResponse struct {
 	Result string `json:"result"`
 }
 
-func HandleApiShorten(shortener apiShortener, baseURL string) echo.HandlerFunc {
+func HandleAPIShorten(shortener apiShortener, baseURL string) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		defer c.Request().Body.Close()
 		// c.Request().Header.Get("Content-Type")
