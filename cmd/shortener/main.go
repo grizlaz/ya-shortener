@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"log"
 	"net/http"
 
 	"github.com/grizlaz/ya-shortener/internal/config"
@@ -21,6 +20,6 @@ func main() {
 	shortener := service.NewService(shorteningStorage)
 	srv := handler.NewServer(shortener, config.BaseURL)
 	if err := http.ListenAndServe(config.ServerAddress, srv); !errors.Is(err, http.ErrServerClosed) {
-		log.Fatalf("error running server: %v", err)
+		logger.Log.Sugar().Fatalf("error running server: %v", err)
 	}
 }

@@ -3,9 +3,9 @@ package handler
 import (
 	"context"
 	"errors"
-	"fmt"
 	"net/http"
 
+	"github.com/grizlaz/ya-shortener/internal/logger"
 	"github.com/grizlaz/ya-shortener/internal/model"
 	"github.com/labstack/echo/v4"
 )
@@ -24,7 +24,7 @@ func HandleRedirect(redirecter redirecter) echo.HandlerFunc {
 				return echo.NewHTTPError(http.StatusNotFound)
 			}
 
-			fmt.Printf("error getting redirect url for %q: %v", identifier, err)
+			logger.Log.Sugar().Debugf("error getting redirect url for %q: %v", identifier, err)
 			return echo.NewHTTPError(http.StatusInternalServerError)
 		}
 

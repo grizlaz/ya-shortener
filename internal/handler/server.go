@@ -36,6 +36,7 @@ func (s *Server) setupRouter() {
 	s.e.Use(logger.WithLogging())
 
 	s.e.POST("/", HandleShorten(s.shortener, s.baseURL))
+	s.e.POST("/api/shorten", HandleApiShorten(s.shortener, s.baseURL))
 	s.e.GET("/:identifier", HandleRedirect(s.shortener))
 	s.e.Any("/*", func(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "wrong url")

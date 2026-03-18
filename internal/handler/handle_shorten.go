@@ -2,10 +2,10 @@ package handler
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"net/http"
 
+	"github.com/grizlaz/ya-shortener/internal/logger"
 	"github.com/grizlaz/ya-shortener/internal/model"
 	"github.com/grizlaz/ya-shortener/internal/service"
 	"github.com/labstack/echo/v4"
@@ -18,6 +18,12 @@ type shortener interface {
 func HandleShorten(shortener shortener, baseURL string) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		defer c.Request().Body.Close()
+
+		contentType := c.Request().Header.Get("Content-Type")
+		if contentType != "text/plain" {
+			return echo.NewHTTPError(http.StatusBadRequest, "wrong content-type")
+		}
+
 		body, err := io.ReadAll(c.Request().Body)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, err)
@@ -29,13 +35,13 @@ func HandleShorten(shortener shortener, baseURL string) echo.HandlerFunc {
 
 		shortening, err := shortener.Shorten(c.Request().Context(), requestURL)
 		if err != nil {
-			fmt.Printf("error shortening url %q: %v", requestURL, err)
+			logger.Log.Sugar().Debugf("error shortening url %q: %v", requestURL, err)
 			return echo.NewHTTPError(http.StatusInternalServerError)
 		}
 
 		shortURL, err := service.PrependBaseURL(baseURL, shortening.Identifier)
 		if err != nil {
-			fmt.Printf("error generating full url for %q: %v", shortening.Identifier, err)
+			logger.Log.Sugar().Debugf("error generating full url for %q: %v", shortening.Identifier, err)
 			return echo.NewHTTPError(http.StatusInternalServerError)
 		}
 		return c.String(
