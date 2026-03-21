@@ -14,7 +14,7 @@ type inFileStorage struct {
 	file     *os.File
 	encoder  *json.Encoder
 	decoder  *json.Decoder
-	lastId   int
+	lastID   int
 }
 
 func NewInFile(filename string) (*inFileStorage, error) {
@@ -27,7 +27,7 @@ func NewInFile(filename string) (*inFileStorage, error) {
 		file:     file,
 		encoder:  json.NewEncoder(file),
 		decoder:  json.NewDecoder(file),
-		lastId:   0,
+		lastID:   0,
 	}
 	err = storage.loadFromFile()
 	if err != nil {
@@ -50,7 +50,7 @@ func (s *inFileStorage) loadFromFile() error {
 	}
 	for err == nil {
 		shortening, err = s.inMemory.Put(context.Background(), *shortening)
-		s.lastId = shortening.ID
+		s.lastID = shortening.ID
 		shortening, err = s.readFromFile()
 	}
 	if err != io.EOF {
@@ -72,8 +72,8 @@ func (s *inFileStorage) readFromFile() (*model.Shortening, error) {
 }
 
 func (s *inFileStorage) Put(ctx context.Context, shortening model.Shortening) (*model.Shortening, error) {
-	s.lastId++
-	shortening.ID = s.lastId
+	s.lastID++
+	shortening.ID = s.lastID
 	_, err := s.inMemory.Put(ctx, shortening)
 	if err != nil {
 		return nil, err
