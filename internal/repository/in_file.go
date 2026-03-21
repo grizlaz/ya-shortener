@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"os"
 
@@ -42,14 +43,17 @@ func (s *inFileStorage) Close() error {
 
 func (s *inFileStorage) loadFromFile() error {
 	shortening, err := s.readFromFile()
+	if err == io.EOF {
+		return nil
+	}
 	if err != nil {
-		if err == io.EOF {
-			return nil
-		}
 		return err
 	}
 	for err == nil {
 		shortening, err = s.inMemory.Put(context.Background(), *shortening)
+		if err != nil {
+			return fmt.Errorf("error put in inMemory storage: %w", err)
+		}
 		s.lastID = shortening.ID
 		shortening, err = s.readFromFile()
 	}
