@@ -9,8 +9,9 @@ import (
 )
 
 type config struct {
-	ServerAddress string
-	BaseURL       string
+	ServerAddress   string
+	BaseURL         string
+	FileStoragePath string
 }
 
 var (
@@ -29,6 +30,7 @@ func Get() config {
 			cfg.BaseURL = s
 			return nil
 		})
+		flag.StringVar(&cfg.FileStoragePath, "f", "storage.txt", "storage path")
 
 		flag.Parse()
 		if envBaseURL := os.Getenv("BASE_URL"); envBaseURL != "" {
@@ -39,6 +41,9 @@ func Get() config {
 		}
 		if envServerAddress := os.Getenv("SERVER_ADDRESS"); envServerAddress != "" {
 			cfg.ServerAddress = envServerAddress
+		}
+		if envFileStoragePath := os.Getenv("FILE_STORAGE_PATH"); envFileStoragePath != "" {
+			cfg.FileStoragePath = envFileStoragePath
 		}
 	})
 	return cfg

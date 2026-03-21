@@ -11,6 +11,7 @@ var (
 )
 
 type Shortening struct {
-	Identifier  string
-	OriginalURL string
+	ShortURL    string `json:"short_url"`
+	OriginalURL string `json:"original_url"`
+	ID          int    `json:"id"`
 }

@@ -19,7 +19,7 @@ func TestService_Shorten(t *testing.T) {
 		shortening, err := svc.Shorten(context.Background(), input)
 		require.NoError(t, err)
 
-		assert.NotEmpty(t, shortening.Identifier)
+		assert.NotEmpty(t, shortening.ShortURL)
 		assert.Equal(t, input, shortening.OriginalURL)
 	})
 }
@@ -33,7 +33,7 @@ func TestService_Redirect(t *testing.T) {
 		shortening, err := svc.Shorten(context.Background(), input)
 		require.NoError(t, err)
 
-		redirectURL, err := svc.Redirect(context.Background(), shortening.Identifier)
+		redirectURL, err := svc.Redirect(context.Background(), shortening.ShortURL)
 		require.NoError(t, err)
 
 		assert.Equal(t, input, redirectURL)

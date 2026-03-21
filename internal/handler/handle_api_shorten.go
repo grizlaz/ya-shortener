@@ -48,9 +48,9 @@ func HandleAPIShorten(shortener apiShortener, baseURL string) echo.HandlerFunc {
 			return echo.NewHTTPError(http.StatusInternalServerError)
 		}
 
-		shortURL, err := service.PrependBaseURL(baseURL, shortening.Identifier)
+		shortURL, err := service.PrependBaseURL(baseURL, shortening.ShortURL)
 		if err != nil {
-			logger.Log.Sugar().Debugf("error generating full url for %q: %v", shortening.Identifier, err)
+			logger.Log.Sugar().Debugf("error generating full url for %q: %v", shortening.ShortURL, err)
 			return echo.NewHTTPError(http.StatusInternalServerError)
 		}
 

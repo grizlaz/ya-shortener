@@ -21,10 +21,10 @@ func NewService(storage Storage) *Service {
 }
 
 func (s *Service) Shorten(ctx context.Context, input string) (*model.Shortening, error) {
-	identifier := Shorten(uuid.New().ID())
+	shortURL := Shorten(uuid.New().ID())
 
 	inputShorterin := model.Shortening{
-		Identifier:  identifier,
+		ShortURL:    shortURL,
 		OriginalURL: input,
 	}
 
@@ -36,12 +36,12 @@ func (s *Service) Shorten(ctx context.Context, input string) (*model.Shortening,
 	return shortering, nil
 }
 
-func (s *Service) Get(ctx context.Context, identifier string) (*model.Shortening, error) {
-	return s.storage.Get(ctx, identifier)
+func (s *Service) Get(ctx context.Context, shortURL string) (*model.Shortening, error) {
+	return s.storage.Get(ctx, shortURL)
 }
 
-func (s *Service) Redirect(ctx context.Context, identifier string) (string, error) {
-	shortering, err := s.storage.Get(ctx, identifier)
+func (s *Service) Redirect(ctx context.Context, shortURL string) (string, error) {
+	shortering, err := s.storage.Get(ctx, shortURL)
 	if err != nil {
 		return "", err
 	}

@@ -14,7 +14,7 @@ GET http://localhost:8080/bwVq7Z
 curl -v  -X POST localhost:8080 -H 'content-type: plain/text'  --data  "https://practicum.yandex.ru/" 
 
 curl -v -X GET http://localhost:8080/eCxA1M
-
+curl -v -X GET http://localhost:8080/cgdU2E
 
 
 POST http://localhost:8080/api/shorten
@@ -54,7 +54,7 @@ Accept-Encoding: gzip
 Content-Encoding: gzip
 Content-Type: application/json
 {
-    "url":"http://hphqha71djxtv.net/cktnspsq4jfvqs"
+    "url":"https://practicum.yandex.ru/"
 }
 
 

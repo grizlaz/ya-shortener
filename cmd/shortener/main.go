@@ -16,7 +16,11 @@ func main() {
 		panic(err)
 	}
 	config := config.Get()
-	shorteningStorage := repository.NewInMemory()
+	// shorteningStorage := repository.NewInMemory()
+	shorteningStorage, err := repository.NewInFile(config.FileStoragePath)
+	if err != nil {
+		logger.Log.Sugar().Fatalf("error init file storage: %v", err)
+	}
 	shortener := service.NewService(shorteningStorage)
 	srv := handler.NewServer(shortener, config.BaseURL)
 	if err := http.ListenAndServe(config.ServerAddress, srv); !errors.Is(err, http.ErrServerClosed) {

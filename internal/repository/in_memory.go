@@ -15,17 +15,17 @@ func NewInMemory() *inMemory {
 }
 
 func (i *inMemory) Put(_ context.Context, shortening model.Shortening) (*model.Shortening, error) {
-	if _, exist := i.m[shortening.Identifier]; exist {
+	if _, exist := i.m[shortening.ShortURL]; exist {
 		return nil, model.ErrIdentifierExists
 	}
 
-	i.m[shortening.Identifier] = &shortening
+	i.m[shortening.ShortURL] = &shortening
 
 	return &shortening, nil
 }
 
-func (i *inMemory) Get(_ context.Context, identifier string) (*model.Shortening, error) {
-	v, ok := i.m[identifier]
+func (i *inMemory) Get(_ context.Context, shortURL string) (*model.Shortening, error) {
+	v, ok := i.m[shortURL]
 	if !ok {
 		return nil, model.ErrNotFound
 	}
