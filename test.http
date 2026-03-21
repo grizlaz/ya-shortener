@@ -19,11 +19,19 @@ curl -v -X GET http://localhost:8080/eCxA1M
 
 POST http://localhost:8080/api/shorten
 Content-Type: application/json
+Accept-Encoding: gzip
 {
     "url":"https://practicum.yandex.ru/"
 }
 
 POST http://localhost:8080/
+Content-Type: application/json
+{
+    "url":"https://practicum.yandex.ru/"
+}
+
+POST http://localhost:8080/api/shorten
+Accept-Encoding: deflate
 Content-Type: application/json
 {
     "url":"https://practicum.yandex.ru/"

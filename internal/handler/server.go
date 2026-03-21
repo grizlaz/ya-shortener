@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"net/http"
+	"slices"
 
 	"github.com/grizlaz/ya-shortener/internal/logger"
 	"github.com/grizlaz/ya-shortener/internal/service"
@@ -34,6 +35,7 @@ func (s *Server) setupRouter() {
 
 	s.e.Pre(middleware.RemoveTrailingSlash())
 	s.e.Use(logger.WithLogging())
+	s.e.Use(middleware.GzipWithConfig(makeGzipConfig()))
 
 	s.e.POST("/", HandleShorten(s.shortener, s.baseURL))
 	s.e.POST("/api/shorten", HandleAPIShorten(s.shortener, s.baseURL))
@@ -52,4 +54,12 @@ func (s *Server) Shutdown(ctx context.Context) error {
 		return err
 	}
 	return nil
+}
+
+func makeGzipConfig() middleware.GzipConfig {
+	return middleware.GzipConfig{
+		Skipper: func(c echo.Context) bool {
+			return !slices.Contains([]string{"application/json", "text/html"}, c.Request().Header.Get(echo.HeaderContentType))
+		},
+	}
 }
