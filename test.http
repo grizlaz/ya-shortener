@@ -36,3 +36,31 @@ Content-Type: application/json
 {
     "url":"https://practicum.yandex.ru/"
 }
+
+
+POST http://localhost:8080/
+Content-Type: text/plain
+
+http://hphqha71djxtv.net/cktnspsq4jfvqs
+
+
+POST http://localhost:8080/
+Content-Type: text/plain
+Content-Encoding: gzip
+
+
+POST http://localhost:8080/api/shorten
+Accept-Encoding: gzip
+Content-Encoding: gzip
+Content-Type: application/json
+{
+    "url":"http://hphqha71djxtv.net/cktnspsq4jfvqs"
+}
+
+
+H4sIAAAAAAAAA6vmUgACpdKiHCUrpYySkgIrff2MgozCjERzw5SsipIyvbzUEv3k7JK84oLiQpOstLLCYiWuWgBxnDq9NwAAAA==
+
+POST http://localhost:8080/
+Content-Type: text/plain
+
+http://hphqha71djxtv.net/cktnspsq4jfvqs

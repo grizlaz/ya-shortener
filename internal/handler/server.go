@@ -35,7 +35,8 @@ func (s *Server) setupRouter() {
 
 	s.e.Pre(middleware.RemoveTrailingSlash())
 	s.e.Use(logger.WithLogging())
-	s.e.Use(middleware.GzipWithConfig(makeGzipConfig()))
+	s.e.Use(middleware.GzipWithConfig(middleware.GzipConfig{Skipper: skipper}))
+	s.e.Use(middleware.DecompressWithConfig(middleware.DecompressConfig{Skipper: skipper}))
 
 	s.e.POST("/", HandleShorten(s.shortener, s.baseURL))
 	s.e.POST("/api/shorten", HandleAPIShorten(s.shortener, s.baseURL))
@@ -56,10 +57,6 @@ func (s *Server) Shutdown(ctx context.Context) error {
 	return nil
 }
 
-func makeGzipConfig() middleware.GzipConfig {
-	return middleware.GzipConfig{
-		Skipper: func(c echo.Context) bool {
-			return !slices.Contains([]string{"application/json", "text/html"}, c.Request().Header.Get(echo.HeaderContentType))
-		},
-	}
+func skipper(c echo.Context) bool {
+	return !slices.Contains([]string{"application/json", "text/html"}, c.Request().Header.Get(echo.HeaderContentType))
 }
