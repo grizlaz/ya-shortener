@@ -58,5 +58,5 @@ func (s *Server) Shutdown(ctx context.Context) error {
 }
 
 func skipper(c echo.Context) bool {
-	return !slices.Contains([]string{"application/json", "text/html"}, c.Request().Header.Get(echo.HeaderContentType))
+	return !slices.Contains([]string{"application/json", "text/plain"}, c.Request().Header.Get(echo.HeaderContentType))
 }
