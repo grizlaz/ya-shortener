@@ -24,7 +24,7 @@ func HandleRedirect(redirecter redirecter) echo.HandlerFunc {
 				return echo.NewHTTPError(http.StatusNotFound)
 			}
 
-			logger.Log.Sugar().Debugf("error getting redirect url for %q: %v", identifier, err)
+			logger.Log.Sugar().Infof("error getting redirect url for %q: %v", identifier, err)
 			return echo.NewHTTPError(http.StatusInternalServerError)
 		}
 

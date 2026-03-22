@@ -27,7 +27,6 @@ type shortenResponse struct {
 func HandleAPIShorten(shortener apiShortener, baseURL string) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		defer c.Request().Body.Close()
-		// c.Request().Header.Get("Content-Type")
 		body, err := io.ReadAll(c.Request().Body)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, err)
@@ -44,13 +43,13 @@ func HandleAPIShorten(shortener apiShortener, baseURL string) echo.HandlerFunc {
 
 		shortening, err := shortener.Shorten(c.Request().Context(), request.URL)
 		if err != nil {
-			logger.Log.Sugar().Debugf("error shortening url %q: %v", request.URL, err)
+			logger.Log.Sugar().Infof("error shortening url %q: %v", request.URL, err)
 			return echo.NewHTTPError(http.StatusInternalServerError)
 		}
 
 		shortURL, err := service.PrependBaseURL(baseURL, shortening.ShortURL)
 		if err != nil {
-			logger.Log.Sugar().Debugf("error generating full url for %q: %v", shortening.ShortURL, err)
+			logger.Log.Sugar().Infof("error generating full url for %q: %v", shortening.ShortURL, err)
 			return echo.NewHTTPError(http.StatusInternalServerError)
 		}
 

@@ -35,13 +35,13 @@ func HandleShorten(shortener shortener, baseURL string) echo.HandlerFunc {
 
 		shortening, err := shortener.Shorten(c.Request().Context(), requestURL)
 		if err != nil {
-			logger.Log.Sugar().Debugf("error shortening url %q: %v", requestURL, err)
+			logger.Log.Sugar().Infof("error shortening url %q: %v", requestURL, err)
 			return echo.NewHTTPError(http.StatusInternalServerError)
 		}
 
 		shortURL, err := service.PrependBaseURL(baseURL, shortening.ShortURL)
 		if err != nil {
-			logger.Log.Sugar().Debugf("error generating full url for %q: %v", shortening.ShortURL, err)
+			logger.Log.Sugar().Infof("error generating full url for %q: %v", shortening.ShortURL, err)
 			return echo.NewHTTPError(http.StatusInternalServerError)
 		}
 		return c.String(

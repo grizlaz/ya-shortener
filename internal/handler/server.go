@@ -58,5 +58,6 @@ func (s *Server) Shutdown(ctx context.Context) error {
 }
 
 func skipper(c echo.Context) bool {
-	return !slices.Contains([]string{"application/json", "text/plain"}, c.Request().Header.Get(echo.HeaderContentType))
+	//не убрал text/plain т.к. он передается в тестах для 8 инкремента
+	return !slices.Contains([]string{"application/json", "text/plain", "text/html"}, c.Request().Header.Get(echo.HeaderContentType))
 }
