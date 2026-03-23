@@ -1,5 +1,6 @@
 POST http://localhost:8080/
 Content-Type: text/plain
+
 https://practicum.yandex.ru/
 
 
@@ -13,3 +14,53 @@ GET http://localhost:8080/bwVq7Z
 curl -v  -X POST localhost:8080 -H 'content-type: plain/text'  --data  "https://practicum.yandex.ru/" 
 
 curl -v -X GET http://localhost:8080/eCxA1M
+curl -v -X GET http://localhost:8080/cgdU2E
+
+
+POST http://localhost:8080/api/shorten
+Content-Type: application/json
+Accept-Encoding: gzip
+{
+    "url":"https://practicum.yandex.ru/"
+}
+
+POST http://localhost:8080/
+Content-Type: application/json
+{
+    "url":"https://practicum.yandex.ru/"
+}
+
+POST http://localhost:8080/api/shorten
+Accept-Encoding: deflate
+Content-Type: application/json
+{
+    "url":"https://practicum.yandex.ru/"
+}
+
+
+POST http://localhost:8080/
+Content-Type: text/plain
+
+http://hphqha71djxtv.net/cktnspsq4jfvqs
+
+
+POST http://localhost:8080/
+Content-Type: text/plain
+Content-Encoding: gzip
+
+
+POST http://localhost:8080/api/shorten
+Accept-Encoding: gzip
+Content-Encoding: gzip
+Content-Type: application/json
+{
+    "url":"https://practicum.yandex.ru/"
+}
+
+
+H4sIAAAAAAAAA6vmUgACpdKiHCUrpYySkgIrff2MgozCjERzw5SsipIyvbzUEv3k7JK84oLiQpOstLLCYiWuWgBxnDq9NwAAAA==
+
+POST http://localhost:8080/
+Content-Type: text/plain
+
+http://hphqha71djxtv.net/cktnspsq4jfvqs

@@ -3,7 +3,9 @@ package handler
 import (
 	"context"
 	"net/http"
+	"slices"
 
+	"github.com/grizlaz/ya-shortener/internal/logger"
 	"github.com/grizlaz/ya-shortener/internal/service"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -32,8 +34,12 @@ func (s *Server) setupRouter() {
 	s.e.HideBanner = true
 
 	s.e.Pre(middleware.RemoveTrailingSlash())
+	s.e.Use(logger.WithLogging())
+	s.e.Use(middleware.GzipWithConfig(middleware.GzipConfig{Skipper: skipper}))
+	s.e.Use(middleware.DecompressWithConfig(middleware.DecompressConfig{Skipper: skipper}))
 
 	s.e.POST("/", HandleShorten(s.shortener, s.baseURL))
+	s.e.POST("/api/shorten", HandleAPIShorten(s.shortener, s.baseURL))
 	s.e.GET("/:identifier", HandleRedirect(s.shortener))
 	s.e.Any("/*", func(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "wrong url")
@@ -49,4 +55,9 @@ func (s *Server) Shutdown(ctx context.Context) error {
 		return err
 	}
 	return nil
+}
+
+func skipper(c echo.Context) bool {
+	//не убрал text/plain т.к. он передается в тестах для 8 инкремента
+	return !slices.Contains([]string{"application/json", "text/plain", "text/html"}, c.Request().Header.Get(echo.HeaderContentType))
 }

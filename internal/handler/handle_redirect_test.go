@@ -23,7 +23,7 @@ func TestHandleRedirect(t *testing.T) {
 
 		shortening, err := redirecter.Shorten(context.Background(), url)
 		require.NoError(t, err)
-		identifier := shortening.Identifier
+		identifier := shortening.ShortURL
 
 		recorder := httptest.NewRecorder()
 		request := httptest.NewRequest(http.MethodGet, "/"+identifier, nil)

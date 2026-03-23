@@ -2,21 +2,28 @@ package main
 
 import (
 	"errors"
-	"log"
 	"net/http"
 
 	"github.com/grizlaz/ya-shortener/internal/config"
 	"github.com/grizlaz/ya-shortener/internal/handler"
+	"github.com/grizlaz/ya-shortener/internal/logger"
 	"github.com/grizlaz/ya-shortener/internal/repository"
 	"github.com/grizlaz/ya-shortener/internal/service"
 )
 
 func main() {
+	if err := logger.Initialize("info"); err != nil {
+		panic(err)
+	}
 	config := config.Get()
-	shorteningStorage := repository.NewInMemory()
+	// shorteningStorage := repository.NewInMemory()
+	shorteningStorage, err := repository.NewInFile(config.FileStoragePath)
+	if err != nil {
+		logger.Log.Sugar().Fatalf("error init file storage: %v", err)
+	}
 	shortener := service.NewService(shorteningStorage)
 	srv := handler.NewServer(shortener, config.BaseURL)
 	if err := http.ListenAndServe(config.ServerAddress, srv); !errors.Is(err, http.ErrServerClosed) {
-		log.Fatalf("error running server: %v", err)
+		logger.Log.Sugar().Fatalf("error running server: %v", err)
 	}
 }
