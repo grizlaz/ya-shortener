@@ -17,6 +17,6 @@ func HandlePing(ctx context.Context, db *sql.DB) echo.HandlerFunc {
 			logger.Log.Sugar().Infof("error ping db: %v", err)
 			return echo.NewHTTPError(http.StatusInternalServerError)
 		}
-		return c.NoContent(http.StatusNoContent)
+		return c.NoContent(http.StatusOK)
 	}
 }
