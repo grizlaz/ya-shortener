@@ -47,12 +47,12 @@ func Get() config {
 		if envFileStoragePath := os.Getenv("FILE_STORAGE_PATH"); envFileStoragePath != "" {
 			cfg.FileStoragePath = envFileStoragePath
 		}
-		if envDbDSN := os.Getenv("DATABASE_DSN"); envDbDSN != "" {
-			cfg.DatabaseDSN = envDbDSN
+		if envDBDSN := os.Getenv("DATABASE_DSN"); envDBDSN != "" {
+			cfg.DatabaseDSN = envDBDSN
 		}
-		if cfg.DatabaseDSN == "" {
-			panic("empty db dns")
-		}
+		// if cfg.DatabaseDSN == "" {
+		// 	panic("empty db dns")
+		// }
 	})
 	return cfg
 }

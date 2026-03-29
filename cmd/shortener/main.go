@@ -25,11 +25,14 @@ func main() {
 		logger.Log.Sugar().Fatalf("error init file storage: %v", err)
 	}
 
-	db, err := sql.Open("pgx", config.DatabaseDSN)
-	if err != nil {
-		logger.Log.Sugar().Fatalf("error init db: %v", err)
+	var db *sql.DB
+	if config.DatabaseDSN != "" {
+		db, err := sql.Open("pgx", config.DatabaseDSN)
+		if err != nil {
+			logger.Log.Sugar().Fatalf("error init db: %v", err)
+		}
+		defer db.Close()
 	}
-	defer db.Close()
 
 	shortener := service.NewService(shorteningStorage)
 	srv := handler.NewServer(shortener, config.BaseURL, db)
