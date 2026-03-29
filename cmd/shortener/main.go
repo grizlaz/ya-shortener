@@ -27,7 +27,7 @@ func main() {
 
 	var db *sql.DB
 	if config.DatabaseDSN != "" {
-		db, err := sql.Open("pgx", config.DatabaseDSN)
+		db, err = sql.Open("pgx", config.DatabaseDSN)
 		if err != nil {
 			logger.Log.Sugar().Fatalf("error init db: %v", err)
 		}
