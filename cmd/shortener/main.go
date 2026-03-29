@@ -1,8 +1,11 @@
 package main
 
 import (
+	"database/sql"
 	"errors"
 	"net/http"
+
+	_ "github.com/jackc/pgx/v5/stdlib"
 
 	"github.com/grizlaz/ya-shortener/internal/config"
 	"github.com/grizlaz/ya-shortener/internal/handler"
@@ -21,8 +24,15 @@ func main() {
 	if err != nil {
 		logger.Log.Sugar().Fatalf("error init file storage: %v", err)
 	}
+
+	db, err := sql.Open("pgx", config.DatabaseDSN)
+	if err != nil {
+		logger.Log.Sugar().Fatalf("error init db: %v", err)
+	}
+	defer db.Close()
+
 	shortener := service.NewService(shorteningStorage)
-	srv := handler.NewServer(shortener, config.BaseURL)
+	srv := handler.NewServer(shortener, config.BaseURL, db)
 	if err := http.ListenAndServe(config.ServerAddress, srv); !errors.Is(err, http.ErrServerClosed) {
 		logger.Log.Sugar().Fatalf("error running server: %v", err)
 	}

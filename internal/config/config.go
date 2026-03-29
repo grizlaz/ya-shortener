@@ -12,6 +12,7 @@ type config struct {
 	ServerAddress   string
 	BaseURL         string
 	FileStoragePath string
+	DatabaseDSN     string
 }
 
 var (
@@ -31,6 +32,7 @@ func Get() config {
 			return nil
 		})
 		flag.StringVar(&cfg.FileStoragePath, "f", "storage.txt", "storage path")
+		flag.StringVar(&cfg.DatabaseDSN, "d", "", "DSN for db")
 
 		flag.Parse()
 		if envBaseURL := os.Getenv("BASE_URL"); envBaseURL != "" {
@@ -44,6 +46,12 @@ func Get() config {
 		}
 		if envFileStoragePath := os.Getenv("FILE_STORAGE_PATH"); envFileStoragePath != "" {
 			cfg.FileStoragePath = envFileStoragePath
+		}
+		if envDbDSN := os.Getenv("DATABASE_DSN"); envDbDSN != "" {
+			cfg.DatabaseDSN = envDbDSN
+		}
+		if cfg.DatabaseDSN == "" {
+			panic("empty db dns")
 		}
 	})
 	return cfg

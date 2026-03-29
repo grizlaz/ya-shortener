@@ -58,9 +58,13 @@ Content-Type: application/json
 }
 
 
-H4sIAAAAAAAAA6vmUgACpdKiHCUrpYySkgIrff2MgozCjERzw5SsipIyvbzUEv3k7JK84oLiQpOstLLCYiWuWgBxnDq9NwAAAA==
-
 POST http://localhost:8080/
 Content-Type: text/plain
 
-http://hphqha71djxtv.net/cktnspsq4jfvqs
+http://hphqha71djxtv.net/
+
+
+
+# host=localhost port=5432 user=postgres password=postgres dbname=shortener sslmode=disable
+
+GET http://localhost:8080/ping
