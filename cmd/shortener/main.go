@@ -15,16 +15,13 @@ import (
 )
 
 func main() {
-	if err := logger.Initialize("info"); err != nil {
+	var err error
+	if err = logger.Initialize("info"); err != nil {
 		panic(err)
 	}
 	config := config.Get()
-	// shorteningStorage := repository.NewInMemory()
-	shorteningStorage, err := repository.NewInFile(config.FileStoragePath)
-	if err != nil {
-		logger.Log.Sugar().Fatalf("error init file storage: %v", err)
-	}
 
+	var shorteningStorage service.Storage
 	var db *sql.DB
 	if config.DatabaseDSN != "" {
 		db, err = sql.Open("pgx", config.DatabaseDSN)
@@ -32,6 +29,13 @@ func main() {
 			logger.Log.Sugar().Fatalf("error init db: %v", err)
 		}
 		defer db.Close()
+		shorteningStorage, err = repository.NewPostgresDB(db)
+	} else {
+		// shorteningStorage := repository.NewInMemory()
+		shorteningStorage, err = repository.NewInFile(config.FileStoragePath)
+	}
+	if err != nil {
+		logger.Log.Sugar().Fatalf("error init file storage: %v", err)
 	}
 
 	shortener := service.NewService(shorteningStorage)

@@ -50,9 +50,6 @@ func Get() config {
 		if envDBDSN := os.Getenv("DATABASE_DSN"); envDBDSN != "" {
 			cfg.DatabaseDSN = envDBDSN
 		}
-		// if cfg.DatabaseDSN == "" {
-		// 	panic("empty db dns")
-		// }
 	})
 	return cfg
 }
