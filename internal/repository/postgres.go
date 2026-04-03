@@ -23,11 +23,10 @@ func NewPostgresDB(db *sql.DB) (*postgres, error) {
 }
 
 func (p *postgres) Put(ctx context.Context, shortening model.Shortening) (*model.Shortening, error) {
-	query := `INSERT INTO shortening (id, original_url, short_url)
-			  VALUES ($1, $2, $3)`
-	_, err := p.db.ExecContext(ctx, query, shortening.ID, shortening.OriginalURL, shortening.ShortURL)
+	query := `INSERT INTO shortening (original_url, short_url)
+			  VALUES ($1, $2)`
+	_, err := p.db.ExecContext(ctx, query, shortening.OriginalURL, shortening.ShortURL)
 	if err != nil {
-		// logger.Log.Sugar().Errorf("error insert into db: %w", err)
 		return nil, err
 	}
 	return &shortening, nil

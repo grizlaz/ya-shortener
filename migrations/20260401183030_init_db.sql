@@ -1,6 +1,6 @@
 -- +goose Up
 create table if not exists shortening (
-	id int primary key,
+	id serial primary key,
 	short_url text not null,
 	original_url text not null
 );
