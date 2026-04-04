@@ -3,9 +3,12 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"errors"
 
 	"github.com/grizlaz/ya-shortener/internal/model"
+	"github.com/jackc/pgerrcode"
 	_ "github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/pressly/goose/v3"
 )
 
@@ -37,9 +40,32 @@ func (p *postgres) Get(ctx context.Context, shortURL string) (*model.Shortening,
 	return &shortening, nil
 }
 
+func (p *postgres) GetByOriginalURL(ctx context.Context, originalURL string) (*model.Shortening, error) {
+	query := `SELECT s.id, s.original_url, s.short_url
+			  FROM shortening s
+			  WHERE s.original_url = $1`
+	var shortening model.Shortening
+	row := p.db.QueryRowContext(ctx, query, originalURL)
+	err := row.Scan(&shortening.ID, &shortening.OriginalURL, &shortening.ShortURL)
+	if err != nil {
+		return nil, err
+	}
+	return &shortening, nil
+}
+
 func (p *postgres) Put(ctx context.Context, shortening model.Shortening) (*model.Shortening, error) {
 	_, err := p.db.ExecContext(ctx, insertQuery, shortening.OriginalURL, shortening.ShortURL)
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgerrcode.IsIntegrityConstraintViolation(pgErr.Code) {
+			err = model.ErrConflict
+			conflictShorten, errGet := p.GetByOriginalURL(ctx, shortening.OriginalURL)
+			if errGet != nil {
+				return nil, errGet
+			}
+			//на сколько это нормально вообще/для данной задачи?
+			return conflictShorten, err
+		}
 		return nil, err
 	}
 	return &shortening, nil

@@ -31,7 +31,7 @@ func (s *Service) Shorten(ctx context.Context, input string) (*model.Shortening,
 
 	shortering, err := s.storage.Put(ctx, inputShorterin)
 	if err != nil {
-		return nil, err
+		return shortering, err
 	}
 
 	return shortering, nil

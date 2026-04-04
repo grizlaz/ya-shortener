@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 
@@ -41,10 +42,14 @@ func HandleAPIShorten(shortener apiShortener, baseURL string) echo.HandlerFunc {
 			return echo.NewHTTPError(http.StatusBadRequest, "empty url")
 		}
 
+		returnCode := http.StatusCreated
 		shortening, err := shortener.Shorten(c.Request().Context(), request.URL)
 		if err != nil {
-			logger.Log.Sugar().Infof("error shortening url %q: %v", request.URL, err)
-			return echo.NewHTTPError(http.StatusInternalServerError)
+			if !errors.Is(err, model.ErrConflict) {
+				logger.Log.Sugar().Infof("error shortening url %q: %v", request.URL, err)
+				return echo.NewHTTPError(http.StatusInternalServerError)
+			}
+			returnCode = http.StatusConflict
 		}
 
 		shortURL, err := service.PrependBaseURL(baseURL, shortening.ShortURL)
@@ -53,7 +58,7 @@ func HandleAPIShorten(shortener apiShortener, baseURL string) echo.HandlerFunc {
 			return echo.NewHTTPError(http.StatusInternalServerError)
 		}
 
-		return c.JSON(http.StatusCreated, shortenResponse{
+		return c.JSON(returnCode, shortenResponse{
 			Result: shortURL,
 		})
 	}
