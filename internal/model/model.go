@@ -15,3 +15,8 @@ type Shortening struct {
 	OriginalURL string `json:"original_url"`
 	ID          int    `json:"id"`
 }
+
+type ShortenRequestBatch struct {
+	ID  string `json:"correlation_id"`
+	URL string `json:"original_url"`
+}

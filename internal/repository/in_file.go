@@ -67,12 +67,27 @@ func (s *inFileStorage) writeToFile(_ context.Context, shortening model.Shorteni
 	return s.encoder.Encode(&shortening)
 }
 
+func (s *inFileStorage) writeToFileBatch(_ context.Context, shortens *[]model.Shortening) error {
+	var err error
+	for _, v := range *shortens {
+		err = s.encoder.Encode(v)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (s *inFileStorage) readFromFile() (*model.Shortening, error) {
 	var shortening *model.Shortening
 	if err := s.decoder.Decode(&shortening); err != nil {
 		return nil, err
 	}
 	return shortening, nil
+}
+
+func (s *inFileStorage) Get(ctx context.Context, shortURL string) (*model.Shortening, error) {
+	return s.inMemory.Get(ctx, shortURL)
 }
 
 func (s *inFileStorage) Put(ctx context.Context, shortening model.Shortening) (*model.Shortening, error) {
@@ -89,6 +104,20 @@ func (s *inFileStorage) Put(ctx context.Context, shortening model.Shortening) (*
 	return &shortening, nil
 }
 
-func (s *inFileStorage) Get(ctx context.Context, shortURL string) (*model.Shortening, error) {
-	return s.inMemory.Get(ctx, shortURL)
+func (s *inFileStorage) PutBatch(ctx context.Context, shortens *[]model.Shortening) (int64, error) {
+	count := int64(0)
+	for _, v := range *shortens {
+		s.lastID++
+		v.ID = s.lastID
+		_, err := s.inMemory.Put(ctx, v)
+		if err != nil {
+			return 0, err
+		}
+		count++
+	}
+	err := s.writeToFileBatch(ctx, shortens)
+	if err != nil {
+		return count, err //TODO нужно ли тут возвращать количество сохраненных строк?
+	}
+	return count, nil
 }
