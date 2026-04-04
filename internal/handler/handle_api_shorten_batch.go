@@ -8,6 +8,7 @@ import (
 
 	"github.com/grizlaz/ya-shortener/internal/logger"
 	"github.com/grizlaz/ya-shortener/internal/model"
+	"github.com/grizlaz/ya-shortener/internal/service"
 	"github.com/labstack/echo/v4"
 )
 
@@ -51,9 +52,14 @@ func HandleAPIShortenBatch(shortener apiShortenerBatch, baseURL string) echo.Han
 		}
 		response := make([]batchResponse, 0, len(*shortens))
 		for i, v := range *shortens {
+			shortURL, err := service.PrependBaseURL(baseURL, v.ShortURL)
+			if err != nil {
+				logger.Log.Sugar().Infof("error generating full url for %q: %v", v.ShortURL, err)
+				return echo.NewHTTPError(http.StatusInternalServerError)
+			}
 			response = append(response, batchResponse{
 				ID:  request[i].ID,
-				URL: v.ShortURL,
+				URL: shortURL,
 			})
 		}
 
