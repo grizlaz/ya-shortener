@@ -78,7 +78,7 @@ func (p *postgres) PutBatch(ctx context.Context, shortens *[]model.Shortening) (
 		return 0, err
 	}
 	defer tx.Rollback()
-	stmt, err := p.db.PrepareContext(ctx, insertQuery)
+	stmt, err := tx.PrepareContext(ctx, insertQuery)
 	if err != nil {
 		return 0, err
 	}
@@ -87,7 +87,7 @@ func (p *postgres) PutBatch(ctx context.Context, shortens *[]model.Shortening) (
 	for _, v := range *shortens {
 		res, err := stmt.ExecContext(ctx, v.OriginalURL, v.ShortURL)
 		if err != nil {
-			return inserts, err //TODO нужно ли тут возвращать количество сохраненных строк?
+			return 0, err
 		}
 		if ins, err := res.RowsAffected(); err == nil {
 			inserts += ins
