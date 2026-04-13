@@ -110,6 +110,8 @@ func (p *postgres) GetUserUrls(ctx context.Context, userID uuid.UUID) (*[]model.
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
+
 	shortenings := make([]model.Shortening, 0)
 	for rows.Next() {
 		shortening := model.Shortening{}
@@ -118,6 +120,11 @@ func (p *postgres) GetUserUrls(ctx context.Context, userID uuid.UUID) (*[]model.
 			return nil, err
 		}
 		shortenings = append(shortenings, shortening)
+	}
+
+	err = rows.Err()
+	if err != nil {
+		return nil, err
 	}
 	return &shortenings, nil
 }
