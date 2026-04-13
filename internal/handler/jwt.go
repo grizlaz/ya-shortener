@@ -38,6 +38,7 @@ func WithJWT() echo.MiddlewareFunc {
 				Secure:   true,
 				SameSite: http.SameSiteStrictMode,
 			}
+			c.Request().AddCookie(cookie)
 
 			c.SetCookie(cookie)
 
@@ -61,7 +62,6 @@ func makeJWT(ID uuid.UUID) (string, error) {
 }
 
 func getUserID(c echo.Context) (uuid.UUID, error) {
-
 	userCookie, err := c.Cookie(cookieName)
 	if err != nil && err == http.ErrNoCookie {
 		if err == http.ErrNoCookie {
