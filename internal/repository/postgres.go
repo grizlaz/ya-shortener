@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 
+	"github.com/google/uuid"
 	"github.com/grizlaz/ya-shortener/internal/model"
 	"github.com/jackc/pgerrcode"
 	_ "github.com/jackc/pgx/v5"
@@ -16,7 +17,7 @@ type postgres struct {
 	db *sql.DB
 }
 
-const insertQuery = "INSERT INTO shortening (original_url, short_url) VALUES ($1, $2)"
+const insertQuery = "INSERT INTO shortening (original_url, short_url, user_id) VALUES ($1, $2, $3)"
 
 func NewPostgresDB(db *sql.DB) (*postgres, error) {
 	pg := &postgres{db}
@@ -28,12 +29,12 @@ func NewPostgresDB(db *sql.DB) (*postgres, error) {
 }
 
 func (p *postgres) Get(ctx context.Context, shortURL string) (*model.Shortening, error) {
-	query := `SELECT s.id, s.original_url, s.short_url 
+	query := `SELECT s.id, s.original_url, s.short_url, s.user_id 
 			  FROM shortening s
 			  WHERE s.short_url = $1`
 	var shortening model.Shortening
 	row := p.db.QueryRowContext(ctx, query, shortURL)
-	err := row.Scan(&shortening.ID, &shortening.OriginalURL, &shortening.ShortURL)
+	err := row.Scan(&shortening.ID, &shortening.OriginalURL, &shortening.ShortURL, &shortening.UserID)
 	if err != nil {
 		return nil, err
 	}
@@ -41,12 +42,12 @@ func (p *postgres) Get(ctx context.Context, shortURL string) (*model.Shortening,
 }
 
 func (p *postgres) GetByOriginalURL(ctx context.Context, originalURL string) (*model.Shortening, error) {
-	query := `SELECT s.id, s.original_url, s.short_url
+	query := `SELECT s.id, s.original_url, s.short_url, s.user_id
 			  FROM shortening s
 			  WHERE s.original_url = $1`
 	var shortening model.Shortening
 	row := p.db.QueryRowContext(ctx, query, originalURL)
-	err := row.Scan(&shortening.ID, &shortening.OriginalURL, &shortening.ShortURL)
+	err := row.Scan(&shortening.ID, &shortening.OriginalURL, &shortening.ShortURL, &shortening.UserID)
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +55,7 @@ func (p *postgres) GetByOriginalURL(ctx context.Context, originalURL string) (*m
 }
 
 func (p *postgres) Put(ctx context.Context, shortening model.Shortening) (*model.Shortening, error) {
-	_, err := p.db.ExecContext(ctx, insertQuery, shortening.OriginalURL, shortening.ShortURL)
+	_, err := p.db.ExecContext(ctx, insertQuery, shortening.OriginalURL, shortening.ShortURL, shortening.UserID)
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgerrcode.IsIntegrityConstraintViolation(pgErr.Code) {
@@ -63,7 +64,6 @@ func (p *postgres) Put(ctx context.Context, shortening model.Shortening) (*model
 			if errGet != nil {
 				return nil, errGet
 			}
-			//на сколько это нормально вообще/для данной задачи?
 			return conflictShorten, err
 		}
 		return nil, err
@@ -85,7 +85,7 @@ func (p *postgres) PutBatch(ctx context.Context, shortens *[]model.Shortening) (
 	defer stmt.Close()
 
 	for _, v := range *shortens {
-		res, err := stmt.ExecContext(ctx, v.OriginalURL, v.ShortURL)
+		res, err := stmt.ExecContext(ctx, v.OriginalURL, v.ShortURL, v.UserID)
 		if err != nil {
 			return 0, err
 		}
@@ -99,4 +99,25 @@ func (p *postgres) PutBatch(ctx context.Context, shortens *[]model.Shortening) (
 		return inserts, err
 	}
 	return inserts, nil
+}
+
+func (p *postgres) GetUserUrls(ctx context.Context, userID uuid.UUID) (*[]model.Shortening, error) {
+	query := `SELECT s.id, s.original_url, s.short_url, s.user_id
+			  FROM shortening s
+			  WHERE s.user_id = $1`
+
+	rows, err := p.db.QueryContext(ctx, query, userID)
+	if err != nil {
+		return nil, err
+	}
+	shortenings := make([]model.Shortening, 0)
+	for rows.Next() {
+		shortening := model.Shortening{}
+		err = rows.Scan(&shortening.ID, &shortening.OriginalURL, &shortening.ShortURL, &shortening.UserID)
+		if err != nil {
+			return nil, err
+		}
+		shortenings = append(shortenings, shortening)
+	}
+	return &shortenings, nil
 }

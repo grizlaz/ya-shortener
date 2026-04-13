@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/grizlaz/ya-shortener/internal/logger"
 	"github.com/grizlaz/ya-shortener/internal/model"
 	"github.com/grizlaz/ya-shortener/internal/service"
@@ -14,7 +15,7 @@ import (
 )
 
 type apiShortener interface {
-	Shorten(context.Context, string) (*model.Shortening, error)
+	Shorten(context.Context, string, uuid.UUID) (*model.Shortening, error)
 }
 
 type shortenRequest struct {
@@ -42,8 +43,13 @@ func HandleAPIShorten(shortener apiShortener, baseURL string) echo.HandlerFunc {
 			return echo.NewHTTPError(http.StatusBadRequest, "empty url")
 		}
 
+		userID, err := getUserID(c)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError)
+		}
+
 		returnCode := http.StatusCreated
-		shortening, err := shortener.Shorten(c.Request().Context(), request.URL)
+		shortening, err := shortener.Shorten(c.Request().Context(), request.URL, userID)
 		if err != nil {
 			if !errors.Is(err, model.ErrConflict) {
 				logger.Log.Sugar().Infof("error shortening url %q: %v", request.URL, err)

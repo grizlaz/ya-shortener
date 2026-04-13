@@ -1,7 +1,8 @@
 POST http://localhost:8080/
 Content-Type: text/plain
+cookie: Authorization=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NzYxMDg2ODYsInVzZXIiOnsiaWQiOiI3YjUwOTcyNS0wMmIyLTQ0NWItYjg3Ny1jOWRjOWFmYTRmZjQifX0.38A7td7nMOAHaV47On6O9e65D9F3IfFX71V6Lz1VTVg
 
-https://practicum.yandex.ru/
+https://practicum.yandex.ru/?33
 
 
 
@@ -105,3 +106,12 @@ Accept-Encoding: gzip
         "original_url": "https://practicum.yandex.ru/?6"
     }
 ]
+
+
+
+GET http://localhost:8080/api/user/urls
+cookie: Authorization=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NzYxMDg2ODYsInVzZXIiOnsiaWQiOiI3YjUwOTcyNS0wMmIyLTQ0NWItYjg3Ny1jOWRjOWFmYTRmZjQifX0.38A7td7nMOAHaV47On6O9e65D9F3IfFX71V6Lz1VTVg
+
+
+GET http://localhost:8080/api/user/urls
+cookie: Authorization=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NzYxMDg2ODYsInVzZXIiOnt9fQ.8MSKobCeJaAjjyO7dP33sGVwAph_lxUBK3ROxlopG7U

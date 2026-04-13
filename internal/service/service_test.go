@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/google/uuid"
 	"github.com/grizlaz/ya-shortener/internal/model"
 	"github.com/grizlaz/ya-shortener/internal/repository"
 	"github.com/grizlaz/ya-shortener/internal/service"
@@ -16,7 +17,7 @@ func TestService_Shorten(t *testing.T) {
 		svc := service.NewService(repository.NewInMemory())
 		input := "https://practicum.yandex.ru/"
 
-		shortening, err := svc.Shorten(context.Background(), input)
+		shortening, err := svc.Shorten(context.Background(), input, uuid.New())
 		require.NoError(t, err)
 
 		assert.NotEmpty(t, shortening.ShortURL)
@@ -30,7 +31,7 @@ func TestService_Redirect(t *testing.T) {
 		svc := service.NewService(inMemoryStorage)
 		input := "https://practicum.yandex.ru/"
 
-		shortening, err := svc.Shorten(context.Background(), input)
+		shortening, err := svc.Shorten(context.Background(), input, uuid.New())
 		require.NoError(t, err)
 
 		redirectURL, err := svc.Redirect(context.Background(), shortening.ShortURL)

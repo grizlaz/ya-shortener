@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/grizlaz/ya-shortener/internal/model"
 )
 
@@ -43,4 +44,14 @@ func (i *inMemory) PutBatch(ctx context.Context, shortens *[]model.Shortening) (
 		count++
 	}
 	return count, nil
+}
+
+func (i *inMemory) GetUserUrls(ctx context.Context, userID uuid.UUID) (*[]model.Shortening, error) {
+	shortenings := make([]model.Shortening, 0)
+	for _, s := range i.m {
+		if s.UserID == userID {
+			shortenings = append(shortenings, *s)
+		}
+	}
+	return &shortenings, nil
 }
