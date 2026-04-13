@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"database/sql"
 	"net/http"
 	"slices"
 
@@ -17,12 +18,14 @@ type Server struct {
 	e         *echo.Echo
 	shortener *service.Service
 	baseURL   string
+	db        *sql.DB
 }
 
-func NewServer(shortener *service.Service, baseURL string) *Server {
+func NewServer(shortener *service.Service, baseURL string, db *sql.DB) *Server {
 	s := &Server{
 		shortener: shortener,
 		baseURL:   baseURL,
+		db:        db,
 	}
 	s.setupRouter()
 
@@ -40,7 +43,9 @@ func (s *Server) setupRouter() {
 
 	s.e.POST("/", HandleShorten(s.shortener, s.baseURL))
 	s.e.POST("/api/shorten", HandleAPIShorten(s.shortener, s.baseURL))
+	s.e.POST("/api/shorten/batch", HandleAPIShortenBatch(s.shortener, s.baseURL))
 	s.e.GET("/:identifier", HandleRedirect(s.shortener))
+	s.e.GET("/ping", HandlePing(context.TODO(), s.db))
 	s.e.Any("/*", func(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "wrong url")
 	})

@@ -6,7 +6,7 @@ https://practicum.yandex.ru/
 
 
 
-GET http://localhost:8080/QMxHy
+GET http://localhost:8080/c4MKtx
 GET http://localhost:8080/asd/as
 
 GET http://localhost:8080/bwVq7Z
@@ -58,9 +58,50 @@ Content-Type: application/json
 }
 
 
-H4sIAAAAAAAAA6vmUgACpdKiHCUrpYySkgIrff2MgozCjERzw5SsipIyvbzUEv3k7JK84oLiQpOstLLCYiWuWgBxnDq9NwAAAA==
-
 POST http://localhost:8080/
 Content-Type: text/plain
 
-http://hphqha71djxtv.net/cktnspsq4jfvqs
+http://hphqha71djxtv.net/
+
+
+
+# host=localhost port=5432 user=postgres password=postgres dbname=shortener sslmode=disable
+
+GET http://localhost:8080/ping
+
+
+go run cmd/shortener/main.go -a localhost:8080 -b http://localhost:8080 -d "host=localhost port=5432 user=postgres password=postgres dbname=shortener sslmode=disable"
+
+goose -dir migrations postgres "postgresql://postgres:postgres@localhost:5432/shortener?sslmode=disable" up
+
+
+
+POST http://localhost:8080/api/shorten/batch
+Content-Type: application/json
+Accept-Encoding: gzip
+[
+    {
+        "correlation_id": "1",
+        "original_url": "https://practicum.yandex.ru/?1"
+    },
+    {
+        "correlation_id": "2",
+        "original_url": "https://practicum.yandex.ru/?2"
+    },
+    {
+        "correlation_id": "3",
+        "original_url": "https://practicum.yandex.ru/?3"
+    },
+    {
+        "correlation_id": "4",
+        "original_url": "https://practicum.yandex.ru/?4"
+    },
+    {
+        "correlation_id": "5",
+        "original_url": "https://practicum.yandex.ru/?5"
+    },
+    {
+        "correlation_id": "6",
+        "original_url": "https://practicum.yandex.ru/?6"
+    }
+]

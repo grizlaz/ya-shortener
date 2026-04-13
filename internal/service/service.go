@@ -8,8 +8,9 @@ import (
 )
 
 type Storage interface {
-	Put(ctx context.Context, shortering model.Shortening) (*model.Shortening, error)
 	Get(ctx context.Context, identifier string) (*model.Shortening, error)
+	Put(ctx context.Context, shortering model.Shortening) (*model.Shortening, error)
+	PutBatch(ctx context.Context, shortering *[]model.Shortening) (int64, error)
 }
 
 type Service struct {
@@ -30,10 +31,26 @@ func (s *Service) Shorten(ctx context.Context, input string) (*model.Shortening,
 
 	shortering, err := s.storage.Put(ctx, inputShorterin)
 	if err != nil {
-		return nil, err
+		return shortering, err
 	}
 
 	return shortering, nil
+}
+
+func (s *Service) ShortenBatch(ctx context.Context, inputs *[]model.ShortenRequestBatch) (*[]model.Shortening, error) {
+	result := make([]model.Shortening, 0, len(*inputs))
+	for _, v := range *inputs {
+		shortURL := Shorten(uuid.New().ID())
+		result = append(result, model.Shortening{
+			ShortURL:    shortURL,
+			OriginalURL: v.URL,
+		})
+	}
+	_, err := s.storage.PutBatch(ctx, &result)
+	if err != nil {
+		return nil, err
+	}
+	return &result, nil
 }
 
 func (s *Service) Get(ctx context.Context, shortURL string) (*model.Shortening, error) {
