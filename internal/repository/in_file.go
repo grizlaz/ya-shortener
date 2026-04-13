@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 
+	"github.com/google/uuid"
 	"github.com/grizlaz/ya-shortener/internal/model"
 )
 
@@ -120,4 +121,8 @@ func (s *inFileStorage) PutBatch(ctx context.Context, shortens *[]model.Shorteni
 		return count, err //TODO нужно ли тут возвращать количество сохраненных строк?
 	}
 	return count, nil
+}
+
+func (s *inFileStorage) GetUserUrls(ctx context.Context, userID uuid.UUID) (*[]model.Shortening, error) {
+	return s.inMemory.GetUserUrls(ctx, userID)
 }

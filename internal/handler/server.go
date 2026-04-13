@@ -40,10 +40,12 @@ func (s *Server) setupRouter() {
 	s.e.Use(logger.WithLogging())
 	s.e.Use(middleware.GzipWithConfig(middleware.GzipConfig{Skipper: skipper}))
 	s.e.Use(middleware.DecompressWithConfig(middleware.DecompressConfig{Skipper: skipper}))
+	s.e.Use(WithJWT())
 
 	s.e.POST("/", HandleShorten(s.shortener, s.baseURL))
 	s.e.POST("/api/shorten", HandleAPIShorten(s.shortener, s.baseURL))
 	s.e.POST("/api/shorten/batch", HandleAPIShortenBatch(s.shortener, s.baseURL))
+	s.e.GET("/api/user/urls", HandleUserUrls(s.shortener, s.baseURL))
 	s.e.GET("/:identifier", HandleRedirect(s.shortener))
 	s.e.GET("/ping", HandlePing(context.TODO(), s.db))
 	s.e.Any("/*", func(c echo.Context) error {

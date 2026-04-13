@@ -6,6 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/google/uuid"
 	"github.com/grizlaz/ya-shortener/internal/handler"
 	"github.com/grizlaz/ya-shortener/internal/repository"
 	"github.com/grizlaz/ya-shortener/internal/service"
@@ -21,7 +22,7 @@ func TestHandleRedirect(t *testing.T) {
 		redirecter := service.NewService(repository.NewInMemory())
 		handler := handler.HandleRedirect(redirecter)
 
-		shortening, err := redirecter.Shorten(context.Background(), url)
+		shortening, err := redirecter.Shorten(context.Background(), url, uuid.New())
 		require.NoError(t, err)
 		identifier := shortening.ShortURL
 

@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 	"sync"
+	"time"
 )
 
 type config struct {
@@ -13,6 +14,8 @@ type config struct {
 	BaseURL         string
 	FileStoragePath string
 	DatabaseDSN     string
+	TokenExp        time.Duration
+	SecretKey       []byte
 }
 
 var (
@@ -22,6 +25,8 @@ var (
 
 func Get() config {
 	once.Do(func() {
+		cfg.SecretKey = []byte("supersecretkey")
+		cfg.TokenExp = time.Hour * 3
 		cfg.BaseURL = "http://localhost:8080"
 		flag.StringVar(&cfg.ServerAddress, "a", ":8080", "address and port to run server")
 		flag.Func("b", `address and port before short url (default "http://localhost:8080")`, func(s string) error {

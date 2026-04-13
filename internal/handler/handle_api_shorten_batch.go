@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/grizlaz/ya-shortener/internal/logger"
 	"github.com/grizlaz/ya-shortener/internal/model"
 	"github.com/grizlaz/ya-shortener/internal/service"
@@ -13,7 +14,7 @@ import (
 )
 
 type apiShortenerBatch interface {
-	ShortenBatch(context.Context, *[]model.ShortenRequestBatch) (*[]model.Shortening, error)
+	ShortenBatch(context.Context, *[]model.ShortenRequestBatch, uuid.UUID) (*[]model.Shortening, error)
 }
 
 type batchResponse struct {
@@ -41,7 +42,12 @@ func HandleAPIShortenBatch(shortener apiShortenerBatch, baseURL string) echo.Han
 			}
 		}
 
-		shortens, err := shortener.ShortenBatch(c.Request().Context(), &request)
+		userID, err := getUserID(c)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError)
+		}
+
+		shortens, err := shortener.ShortenBatch(c.Request().Context(), &request, userID)
 		if err != nil {
 			logger.Log.Sugar().Infof("error shortening batch urls: %v", err)
 			return echo.NewHTTPError(http.StatusInternalServerError)
