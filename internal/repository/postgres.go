@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
-	"github.com/grizlaz/ya-shortener/internal/logger"
 	"github.com/grizlaz/ya-shortener/internal/model"
 	"github.com/jackc/pgerrcode"
 	_ "github.com/jackc/pgx/v5"
@@ -56,7 +55,6 @@ func (p *postgres) GetByOriginalURL(ctx context.Context, originalURL string) (*m
 }
 
 func (p *postgres) Put(ctx context.Context, shortening model.Shortening) (*model.Shortening, error) {
-	logger.Log.Sugar().Infof("put args %s %s %v %v", shortening.OriginalURL, shortening.ShortURL, shortening.UserID, shortening.IsDeleted)
 	_, err := p.db.ExecContext(ctx, insertQuery, shortening.OriginalURL, shortening.ShortURL, shortening.UserID, shortening.IsDeleted)
 	if err != nil {
 		var pgErr *pgconn.PgError
