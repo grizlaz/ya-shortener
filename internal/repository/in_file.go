@@ -126,3 +126,12 @@ func (s *inFileStorage) PutBatch(ctx context.Context, shortens *[]model.Shorteni
 func (s *inFileStorage) GetUserUrls(ctx context.Context, userID uuid.UUID) (*[]model.Shortening, error) {
 	return s.inMemory.GetUserUrls(ctx, userID)
 }
+
+func (s *inFileStorage) DeleteUserUrls(ctx context.Context, deleteUrls ...model.DeleteUrls) error {
+	err := s.inMemory.DeleteUserUrls(ctx, deleteUrls...)
+	if err != nil {
+		return err
+	}
+	//TODO не придумал пока как реализовать обновлять отдельные записи, просто - через перезапись всего файла, красиво пока не разобрался как
+	return nil
+}

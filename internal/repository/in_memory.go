@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"slices"
 
 	"github.com/google/uuid"
 	"github.com/grizlaz/ya-shortener/internal/model"
@@ -54,4 +55,16 @@ func (i *inMemory) GetUserUrls(ctx context.Context, userID uuid.UUID) (*[]model.
 		}
 	}
 	return &shortenings, nil
+}
+
+func (i *inMemory) DeleteUserUrls(ctx context.Context, deleteUrls ...model.DeleteUrls) error {
+	for _, delUrls := range deleteUrls {
+		for _, s := range i.m {
+			if s.UserID == delUrls.UserID && slices.Contains(*delUrls.Urls, s.ShortURL) {
+				s.IsDeleted = true
+				i.m[s.ShortURL] = s
+			}
+		}
+	}
+	return nil
 }

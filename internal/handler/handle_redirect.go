@@ -19,11 +19,14 @@ func HandleRedirect(redirecter redirecter) echo.HandlerFunc {
 		identifier := c.Param("identifier")
 
 		redirectURL, err := redirecter.Redirect(c.Request().Context(), identifier)
-		if err != nil {
-			if errors.Is(err, model.ErrNotFound) {
-				return echo.NewHTTPError(http.StatusNotFound)
-			}
 
+		if errors.Is(err, model.ErrNotFound) {
+			return echo.NewHTTPError(http.StatusNotFound)
+		}
+		if errors.Is(err, model.ErrUrlDeleted) {
+			return c.NoContent(http.StatusGone)
+		}
+		if err != nil {
 			logger.Log.Sugar().Infof("error getting redirect url for %q: %v", identifier, err)
 			return echo.NewHTTPError(http.StatusInternalServerError)
 		}

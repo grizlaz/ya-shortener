@@ -19,7 +19,7 @@ func TestHandleRedirect(t *testing.T) {
 	t.Run("redirects to original URL", func(t *testing.T) {
 		url := "https://practicum.yandex.ru"
 
-		redirecter := service.NewService(repository.NewInMemory())
+		redirecter := service.NewService(context.TODO(), repository.NewInMemory())
 		handler := handler.HandleRedirect(redirecter)
 
 		shortening, err := redirecter.Shorten(context.Background(), url, uuid.New())
@@ -42,7 +42,7 @@ func TestHandleRedirect(t *testing.T) {
 
 	t.Run("returns 404 if identifier is not found", func(t *testing.T) {
 		identifier := "ya"
-		redirecter := service.NewService(repository.NewInMemory())
+		redirecter := service.NewService(context.TODO(), repository.NewInMemory())
 		handler := handler.HandleRedirect(redirecter)
 		recorder := httptest.NewRecorder()
 		request := httptest.NewRequest(http.MethodGet, "/"+identifier, nil)

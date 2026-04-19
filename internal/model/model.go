@@ -13,12 +13,14 @@ var (
 	ErrInvalidURL       = errors.New("invalid url")
 	ErrConflict         = errors.New("url already exists")
 	ErrUnauthorized     = errors.New("unauthorized")
+	ErrUrlDeleted       = errors.New("url deleted")
 )
 
 type Shortening struct {
 	ShortURL    string    `json:"short_url"`
 	OriginalURL string    `json:"original_url"`
 	ID          int       `json:"id"`
+	IsDeleted   bool      `json:"is_deleted"`
 	UserID      uuid.UUID `json:"-"`
 }
 
@@ -34,4 +36,9 @@ type User struct {
 type UserClaims struct {
 	jwt.RegisteredClaims
 	User `json:"user"`
+}
+
+type DeleteUrls struct {
+	UserID uuid.UUID
+	Urls   *[]string
 }
