@@ -23,7 +23,7 @@ func HandleRedirect(redirecter redirecter) echo.HandlerFunc {
 		if errors.Is(err, model.ErrNotFound) {
 			return echo.NewHTTPError(http.StatusNotFound)
 		}
-		if errors.Is(err, model.ErrUrlDeleted) {
+		if errors.Is(err, model.ErrURLDeleted) {
 			return c.NoContent(http.StatusGone)
 		}
 		if err != nil {

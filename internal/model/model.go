@@ -13,7 +13,7 @@ var (
 	ErrInvalidURL       = errors.New("invalid url")
 	ErrConflict         = errors.New("url already exists")
 	ErrUnauthorized     = errors.New("unauthorized")
-	ErrUrlDeleted       = errors.New("url deleted")
+	ErrURLDeleted       = errors.New("url deleted")
 )
 
 type Shortening struct {

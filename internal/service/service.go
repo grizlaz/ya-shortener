@@ -78,7 +78,7 @@ func (s *Service) Redirect(ctx context.Context, shortURL string) (string, error)
 		return "", err
 	}
 	if shortering.IsDeleted {
-		return "", model.ErrUrlDeleted
+		return "", model.ErrURLDeleted
 	}
 
 	return shortering.OriginalURL, nil
