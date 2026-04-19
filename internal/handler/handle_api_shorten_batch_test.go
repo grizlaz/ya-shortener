@@ -50,8 +50,8 @@ func TestHandleShortenBatch(t *testing.T) {
 
 		assert.Equal(t, http.StatusCreated, recorder.Result().StatusCode)
 
-		defer recorder.Result().Body.Close()
 		responseBody, err := io.ReadAll(recorder.Result().Body)
+		recorder.Result().Body.Close()
 		require.NoError(t, err)
 
 		var response []batchResponse

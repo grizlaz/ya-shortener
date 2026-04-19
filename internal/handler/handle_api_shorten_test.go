@@ -36,8 +36,8 @@ func TestHandleShorten(t *testing.T) {
 
 		require.NoError(t, handler(c))
 
-		defer recorder.Result().Body.Close()
 		responseBody, err := io.ReadAll(recorder.Result().Body)
+		recorder.Result().Body.Close()
 		require.NoError(t, err)
 
 		assert.Contains(t, string(responseBody), baseURL)
