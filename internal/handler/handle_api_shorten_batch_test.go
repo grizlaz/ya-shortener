@@ -50,7 +50,7 @@ func TestHandleShortenBatch(t *testing.T) {
 
 		assert.Equal(t, http.StatusCreated, recorder.Result().StatusCode)
 
-		responseBody, err := io.ReadAll(recorder.Result().Body)
+		responseBody, err := io.ReadAll(recorder.Result().Body) //nolint:bodyclose
 		recorder.Result().Body.Close()
 		require.NoError(t, err)
 

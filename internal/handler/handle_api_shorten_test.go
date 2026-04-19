@@ -36,7 +36,7 @@ func TestHandleShorten(t *testing.T) {
 
 		require.NoError(t, handler(c))
 
-		responseBody, err := io.ReadAll(recorder.Result().Body)
+		responseBody, err := io.ReadAll(recorder.Result().Body) //nolint:bodyclose
 		recorder.Result().Body.Close()
 		require.NoError(t, err)
 
