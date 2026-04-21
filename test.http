@@ -1,14 +1,25 @@
 POST http://localhost:8080/
 Content-Type: text/plain
-cookie: Authorization=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NzYxMDg2ODYsInVzZXIiOnsiaWQiOiI3YjUwOTcyNS0wMmIyLTQ0NWItYjg3Ny1jOWRjOWFmYTRmZjQifX0.38A7td7nMOAHaV47On6O9e65D9F3IfFX71V6Lz1VTVg
 
 https://practicum.yandex.ru/?33
 
+POST http://localhost:8080/
+Content-Type: text/plain
+cookie: Authorization=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NzY1NDA4NjEsInVzZXIiOnsiaWQiOiI0ZDg2MDIwYy1jZTM1LTRhMzktOTljYy1lNjRiOWRhZmRhOTcifX0.53mXkMSBSz4iZ6kdMaAYIYJXZDM-8uwcdiQS5xIukFM
+
+https://practicum.yandex.ru/?2
+
+
+DELETE http://localhost:8080/api/user/urls
+cookie: Authorization=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNGQ4NjAyMGMtY2UzNS00YTM5LTk5Y2MtZTY0YjlkYWZkYTk3In19.5CMx4xY5u8MoDi5ez-gOJE2MnvBqxYx7SYpMJEFRj04
+Content-Type: application/json
+["ctcLU2"]
 
 
 
-GET http://localhost:8080/c4MKtx
-GET http://localhost:8080/asd/as
+
+GET http://localhost:8080/bUN3sk
+GET http://localhost:8080/fdHWCA
 
 GET http://localhost:8080/bwVq7Z
 
@@ -69,6 +80,7 @@ http://hphqha71djxtv.net/
 # host=localhost port=5432 user=postgres password=postgres dbname=shortener sslmode=disable
 
 GET http://localhost:8080/ping
+cookie: Authorization=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NzY1NDA4NjEsInVzZXIiOnsiaWQiOiI0ZDg2MDIwYy1jZTM1LTRhMzktOTljYy1lNjRiOWRhZmRhOTcifX0.53mXkMSBSz4iZ6kdMaAYIYJXZDM-8uwcdiQS5xIukFM
 
 
 go run cmd/shortener/main.go -a localhost:8080 -b http://localhost:8080 -d "host=localhost port=5432 user=postgres password=postgres dbname=shortener sslmode=disable"
@@ -110,8 +122,11 @@ Accept-Encoding: gzip
 
 
 GET http://localhost:8080/api/user/urls
-cookie: Authorization=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NzYxMDg2ODYsInVzZXIiOnsiaWQiOiI3YjUwOTcyNS0wMmIyLTQ0NWItYjg3Ny1jOWRjOWFmYTRmZjQifX0.38A7td7nMOAHaV47On6O9e65D9F3IfFX71V6Lz1VTVg
+cookie: Authorization=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NzY1NDA4NjEsInVzZXIiOnsiaWQiOiI0ZDg2MDIwYy1jZTM1LTRhMzktOTljYy1lNjRiOWRhZmRhOTcifX0.53mXkMSBSz4iZ6kdMaAYIYJXZDM-8uwcdiQS5xIukFM
 
 
 GET http://localhost:8080/api/user/urls
-cookie: Authorization=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NzYxMDg2ODYsInVzZXIiOnt9fQ.8MSKobCeJaAjjyO7dP33sGVwAph_lxUBK3ROxlopG7U
+cookie: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NzY1NDA4NjEsInVzZXIiOnsiaWQiOiI0ZDg2MDIwYy1jZTM1LTRhMzktOTljYy1lNjRiOWRhZmRhOTcifX0.53mXkMSBSz4iZ6kdMaAYIYJXZDM-8uwcdiQS5xIukFM
+
+
+Authorization=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NzY1NDA4NjEsInVzZXIiOnsiaWQiOiI0ZDg2MDIwYy1jZTM1LTRhMzktOTljYy1lNjRiOWRhZmRhOTcifX0.53mXkMSBSz4iZ6kdMaAYIYJXZDM-8uwcdiQS5xIukFM

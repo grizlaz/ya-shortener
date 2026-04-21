@@ -63,7 +63,7 @@ func makeJWT(ID uuid.UUID) (string, error) {
 
 func getUserID(c echo.Context) (uuid.UUID, error) {
 	userCookie, err := c.Cookie(cookieName)
-	if err != nil && err == http.ErrNoCookie {
+	if err != nil {
 		if err == http.ErrNoCookie {
 			return uuid.New(), nil
 		}

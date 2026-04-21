@@ -97,8 +97,6 @@ func (s *Service) DeleteUserUrls(_ context.Context, deleteUrls model.DeleteUrls)
 func (s *Service) flushDeleteUrls(ctx context.Context) {
 	ticker := time.NewTicker(10 * time.Second)
 	defer ticker.Stop()
-	// Норм канал здесь закрывать? Пишется он в DeleteUserUrls, но объект тот же и слежу за контекстом процесса здесь
-	// defer close(s.deleteCh)
 
 	var queue []model.DeleteUrls
 
