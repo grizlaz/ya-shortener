@@ -12,8 +12,6 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-type CloseFunc func(context.Context) error
-
 type Server struct {
 	e         *echo.Echo
 	shortener *service.Service

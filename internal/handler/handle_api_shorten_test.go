@@ -12,6 +12,7 @@ import (
 	"github.com/grizlaz/ya-shortener/internal/repository"
 	"github.com/grizlaz/ya-shortener/internal/service"
 	"github.com/labstack/echo/v4"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -39,6 +40,6 @@ func TestHandleShorten(t *testing.T) {
 		// require.NoError(t, err)
 
 		// assert.Contains(t, string(responseBody), baseURL)
-		// assert.Equal(t, http.StatusCreated, recorder.Result().StatusCode)
+		assert.Equal(t, http.StatusCreated, recorder.Result().StatusCode)
 	})
 }
