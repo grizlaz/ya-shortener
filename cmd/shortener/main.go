@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"net/http"
@@ -38,7 +39,7 @@ func main() {
 		logger.Log.Sugar().Fatalf("error init file storage: %v", err)
 	}
 
-	shortener := service.NewService(shorteningStorage)
+	shortener := service.NewService(context.Background(), shorteningStorage)
 	srv := handler.NewServer(shortener, config.BaseURL, db)
 	if err := http.ListenAndServe(config.ServerAddress, srv); !errors.Is(err, http.ErrServerClosed) {
 		logger.Log.Sugar().Fatalf("error running server: %v", err)

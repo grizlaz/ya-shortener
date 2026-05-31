@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/grizlaz/ya-shortener/internal/logger"
 	"github.com/grizlaz/ya-shortener/internal/model"
 	"github.com/grizlaz/ya-shortener/internal/service"
@@ -13,7 +14,7 @@ import (
 )
 
 type shortener interface {
-	Shorten(context.Context, string) (*model.Shortening, error)
+	Shorten(context.Context, string, uuid.UUID) (*model.Shortening, error)
 }
 
 func HandleShorten(shortener shortener, baseURL string) echo.HandlerFunc {
@@ -34,11 +35,17 @@ func HandleShorten(shortener shortener, baseURL string) echo.HandlerFunc {
 			return echo.NewHTTPError(http.StatusBadRequest, "empty body")
 		}
 
+		userID, err := getUserID(c)
+		if err != nil {
+			logger.Log.Sugar().Errorf("error get user id %q: %v", requestURL, err)
+			return echo.NewHTTPError(http.StatusInternalServerError)
+		}
+
 		returnCode := http.StatusCreated
-		shortening, err := shortener.Shorten(c.Request().Context(), requestURL)
+		shortening, err := shortener.Shorten(c.Request().Context(), requestURL, userID)
 		if err != nil {
 			if !errors.Is(err, model.ErrConflict) {
-				logger.Log.Sugar().Infof("error shortening url %q: %v", requestURL, err)
+				logger.Log.Sugar().Errorf("error shortening url %q: %v", requestURL, err)
 				return echo.NewHTTPError(http.StatusInternalServerError)
 			}
 			returnCode = http.StatusConflict
@@ -46,7 +53,7 @@ func HandleShorten(shortener shortener, baseURL string) echo.HandlerFunc {
 
 		shortURL, err := service.PrependBaseURL(baseURL, shortening.ShortURL)
 		if err != nil {
-			logger.Log.Sugar().Infof("error generating full url for %q: %v", shortening.ShortURL, err)
+			logger.Log.Sugar().Errorf("error generating full url for %q: %v", shortening.ShortURL, err)
 			return echo.NewHTTPError(http.StatusInternalServerError)
 		}
 		return c.String(
