@@ -27,6 +27,7 @@ func (a *auditClient) SendAuditMessage(message model.AuditMessage) error {
 		return fmt.Errorf("error marshal audit message: %w", err)
 	}
 	resp, err := a.client.Post(a.address, "application/json", bytes.NewReader(body))
+	defer resp.Body.Close()
 	if err != nil {
 		return fmt.Errorf("error send audit message: %w", err)
 	}

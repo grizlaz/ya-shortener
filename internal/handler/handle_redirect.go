@@ -34,7 +34,7 @@ func HandleRedirect(redirecter redirecter, audit *audit.Audit) echo.HandlerFunc 
 		}
 
 		audit.Send(model.AuditMessage{
-			Ts:     time.Now().Unix(),
+			TS:     time.Now().Unix(),
 			Action: "follow",
 			URL:    redirectURL,
 		})

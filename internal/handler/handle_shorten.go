@@ -59,7 +59,7 @@ func HandleShorten(shortener shortener, baseURL string, audit *audit.Audit) echo
 			return echo.NewHTTPError(http.StatusInternalServerError)
 		}
 		audit.Send(model.AuditMessage{
-			Ts:     time.Now().Unix(),
+			TS:     time.Now().Unix(),
 			Action: "shorten",
 			UserID: userID.String(),
 			URL:    requestURL,
