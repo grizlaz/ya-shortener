@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/grizlaz/ya-shortener/internal/audit"
 	"github.com/grizlaz/ya-shortener/internal/handler"
 	"github.com/grizlaz/ya-shortener/internal/repository"
 	"github.com/grizlaz/ya-shortener/internal/service"
@@ -23,7 +24,8 @@ func TestHandleShorten(t *testing.T) {
 		body := strings.NewReader(fmt.Sprintf(`{"url":"%s"}`, url))
 
 		shorten := service.NewService(context.Background(), repository.NewInMemory())
-		handler := handler.HandleAPIShorten(shorten, baseURL)
+		audit := audit.NewAudit()
+		handler := handler.HandleAPIShorten(shorten, baseURL, audit)
 
 		recorder := httptest.NewRecorder()
 		request := httptest.NewRequest(http.MethodPost, path, body)

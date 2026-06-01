@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"slices"
 
+	"github.com/grizlaz/ya-shortener/internal/audit"
 	"github.com/grizlaz/ya-shortener/internal/logger"
 	"github.com/grizlaz/ya-shortener/internal/service"
 	"github.com/labstack/echo/v4"
@@ -17,13 +18,15 @@ type Server struct {
 	shortener *service.Service
 	baseURL   string
 	db        *sql.DB
+	audit     *audit.Audit
 }
 
-func NewServer(shortener *service.Service, baseURL string, db *sql.DB) *Server {
+func NewServer(shortener *service.Service, baseURL string, db *sql.DB, audit *audit.Audit) *Server {
 	s := &Server{
 		shortener: shortener,
 		baseURL:   baseURL,
 		db:        db,
+		audit:     audit,
 	}
 	s.setupRouter()
 
@@ -38,14 +41,15 @@ func (s *Server) setupRouter() {
 	s.e.Use(middleware.GzipWithConfig(middleware.GzipConfig{Skipper: skipper}))
 	s.e.Use(middleware.DecompressWithConfig(middleware.DecompressConfig{Skipper: skipper}))
 	s.e.Use(logger.WithLogging())
+	// s.e.Use(audit.WithAudit(s.audit))
 	s.e.Use(WithJWT())
 
-	s.e.POST("/", HandleShorten(s.shortener, s.baseURL))
-	s.e.POST("/api/shorten", HandleAPIShorten(s.shortener, s.baseURL))
+	s.e.POST("/", HandleShorten(s.shortener, s.baseURL, s.audit))
+	s.e.POST("/api/shorten", HandleAPIShorten(s.shortener, s.baseURL, s.audit))
 	s.e.POST("/api/shorten/batch", HandleAPIShortenBatch(s.shortener, s.baseURL))
 	s.e.GET("/api/user/urls", HandleUserUrls(s.shortener, s.baseURL))
 	s.e.DELETE("/api/user/urls", HandleDeleteUserUrls(s.shortener))
-	s.e.GET("/:identifier", HandleRedirect(s.shortener))
+	s.e.GET("/:identifier", HandleRedirect(s.shortener, s.audit))
 	s.e.GET("/ping", HandlePing(context.TODO(), s.db))
 	s.e.Any("/*", func(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "wrong url")

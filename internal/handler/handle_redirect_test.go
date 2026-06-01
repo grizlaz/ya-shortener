@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
+	"github.com/grizlaz/ya-shortener/internal/audit"
 	"github.com/grizlaz/ya-shortener/internal/handler"
 	"github.com/grizlaz/ya-shortener/internal/model"
 	"github.com/grizlaz/ya-shortener/internal/repository"
@@ -21,7 +22,8 @@ func TestHandleRedirect(t *testing.T) {
 		url := "https://practicum.yandex.ru"
 
 		redirecter := service.NewService(context.TODO(), repository.NewInMemory())
-		handler := handler.HandleRedirect(redirecter)
+		audit := audit.NewAudit()
+		handler := handler.HandleRedirect(redirecter, audit)
 
 		shortening, err := redirecter.Shorten(context.Background(), url, uuid.New())
 		require.NoError(t, err)
@@ -44,7 +46,8 @@ func TestHandleRedirect(t *testing.T) {
 	t.Run("returns 404 if identifier is not found", func(t *testing.T) {
 		identifier := "ya"
 		redirecter := service.NewService(context.TODO(), repository.NewInMemory())
-		handler := handler.HandleRedirect(redirecter)
+		audit := audit.NewAudit()
+		handler := handler.HandleRedirect(redirecter, audit)
 		recorder := httptest.NewRecorder()
 		request := httptest.NewRequest(http.MethodGet, "/"+identifier, nil)
 		e := echo.New()
@@ -62,7 +65,8 @@ func TestHandleRedirect(t *testing.T) {
 
 		repository := repository.NewInMemory()
 		redirecter := service.NewService(context.TODO(), repository)
-		handler := handler.HandleRedirect(redirecter)
+		audit := audit.NewAudit()
+		handler := handler.HandleRedirect(redirecter, audit)
 
 		userID := uuid.New()
 		shortening, err := redirecter.Shorten(context.TODO(), url, userID)

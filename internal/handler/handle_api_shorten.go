@@ -6,8 +6,10 @@ import (
 	"errors"
 	"io"
 	"net/http"
+	"time"
 
 	"github.com/google/uuid"
+	"github.com/grizlaz/ya-shortener/internal/audit"
 	"github.com/grizlaz/ya-shortener/internal/logger"
 	"github.com/grizlaz/ya-shortener/internal/model"
 	"github.com/grizlaz/ya-shortener/internal/service"
@@ -26,7 +28,7 @@ type shortenResponse struct {
 	Result string `json:"result"`
 }
 
-func HandleAPIShorten(shortener apiShortener, baseURL string) echo.HandlerFunc {
+func HandleAPIShorten(shortener apiShortener, baseURL string, audit *audit.Audit) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		defer c.Request().Body.Close()
 		body, err := io.ReadAll(c.Request().Body)
@@ -63,7 +65,12 @@ func HandleAPIShorten(shortener apiShortener, baseURL string) echo.HandlerFunc {
 			logger.Log.Sugar().Infof("error generating full url for %q: %v", shortening.ShortURL, err)
 			return echo.NewHTTPError(http.StatusInternalServerError)
 		}
-
+		audit.Send(model.AuditMessage{
+			Ts:     time.Now().Unix(),
+			Action: "shorten",
+			UserID: userID.String(),
+			URL:    request.URL,
+		})
 		return c.JSON(returnCode, shortenResponse{
 			Result: shortURL,
 		})

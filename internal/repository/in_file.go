@@ -19,8 +19,12 @@ type inFileStorage struct {
 	lastID   int
 }
 
-func NewInFile(filename string) (*inFileStorage, error) {
-	file, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE, 0666)
+func NewInFile(filename string, isAudit bool) (*inFileStorage, error) {
+	flags := os.O_RDWR | os.O_CREATE
+	if isAudit {
+		flags = os.O_RDWR | os.O_CREATE | os.O_APPEND
+	}
+	file, err := os.OpenFile(filename, flags, 0666)
 	if err != nil {
 		return nil, err
 	}
@@ -31,9 +35,11 @@ func NewInFile(filename string) (*inFileStorage, error) {
 		decoder:  json.NewDecoder(file),
 		lastID:   0,
 	}
-	err = storage.loadFromFile()
-	if err != nil {
-		return nil, err
+	if !isAudit {
+		err = storage.loadFromFile()
+		if err != nil {
+			return nil, err
+		}
 	}
 	return storage, nil
 }
@@ -134,4 +140,8 @@ func (s *inFileStorage) DeleteUserUrls(ctx context.Context, deleteUrls ...model.
 	}
 	//TODO не придумал пока как реализовать обновлять отдельные записи, просто - через перезапись всего файла, красиво пока не разобрался как
 	return nil
+}
+
+func (s *inFileStorage) SendAuditMessage(message model.AuditMessage) error {
+	return s.encoder.Encode(&message)
 }
