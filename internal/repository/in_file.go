@@ -28,8 +28,9 @@ func NewInFile(filename string, isAudit bool) (*inFileStorage, error) {
 	if err != nil {
 		return nil, err
 	}
+	initCap := 100
 	storage := &inFileStorage{
-		inMemory: NewInMemory(),
+		inMemory: NewInMemory(initCap),
 		file:     file,
 		encoder:  json.NewEncoder(file),
 		decoder:  json.NewDecoder(file),

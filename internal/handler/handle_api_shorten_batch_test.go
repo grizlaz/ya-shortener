@@ -17,6 +17,7 @@ import (
 )
 
 func TestHandleShortenBatch(t *testing.T) {
+	initCap := 100
 	t.Run("short batch urls", func(t *testing.T) {
 		path := "/api/shorten/batch"
 		URLCount := 5
@@ -35,7 +36,7 @@ func TestHandleShortenBatch(t *testing.T) {
 		require.NoError(t, err)
 
 		body := bytes.NewReader(bodyData)
-		shorten := service.NewService(context.Background(), repository.NewInMemory())
+		shorten := service.NewService(context.Background(), repository.NewInMemory(initCap))
 		handler := HandleAPIShortenBatch(shorten, baseURL)
 
 		recorder := httptest.NewRecorder()

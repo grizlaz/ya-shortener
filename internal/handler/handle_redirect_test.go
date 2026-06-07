@@ -18,10 +18,11 @@ import (
 )
 
 func TestHandleRedirect(t *testing.T) {
+	initCap := 100
 	t.Run("redirects to original URL", func(t *testing.T) {
 		url := "https://practicum.yandex.ru"
 
-		redirecter := service.NewService(context.TODO(), repository.NewInMemory())
+		redirecter := service.NewService(context.TODO(), repository.NewInMemory(initCap))
 		audit := audit.NewAudit()
 		handler := handler.HandleRedirect(redirecter, audit)
 
@@ -45,7 +46,7 @@ func TestHandleRedirect(t *testing.T) {
 
 	t.Run("returns 404 if identifier is not found", func(t *testing.T) {
 		identifier := "ya"
-		redirecter := service.NewService(context.TODO(), repository.NewInMemory())
+		redirecter := service.NewService(context.TODO(), repository.NewInMemory(initCap))
 		audit := audit.NewAudit()
 		handler := handler.HandleRedirect(redirecter, audit)
 		recorder := httptest.NewRecorder()
@@ -63,7 +64,7 @@ func TestHandleRedirect(t *testing.T) {
 	t.Run("returns 410 if identifier is deleted", func(t *testing.T) {
 		url := "https://practicum.yandex.ru"
 
-		repository := repository.NewInMemory()
+		repository := repository.NewInMemory(initCap)
 		redirecter := service.NewService(context.TODO(), repository)
 		audit := audit.NewAudit()
 		handler := handler.HandleRedirect(redirecter, audit)

@@ -17,13 +17,14 @@ import (
 )
 
 func TestHandleShorten(t *testing.T) {
+	initCap := 100
 	t.Run("get short url", func(t *testing.T) {
 		baseURL := "http://localhost:8080"
 		url := "https://practicum.yandex.ru"
 		path := "/api/shorten"
 		body := strings.NewReader(fmt.Sprintf(`{"url":"%s"}`, url))
 
-		shorten := service.NewService(context.Background(), repository.NewInMemory())
+		shorten := service.NewService(context.Background(), repository.NewInMemory(initCap))
 		audit := audit.NewAudit()
 		handler := handler.HandleAPIShorten(shorten, baseURL, audit)
 

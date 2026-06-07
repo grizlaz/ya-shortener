@@ -14,8 +14,9 @@ import (
 )
 
 func TestService_Shorten(t *testing.T) {
+	initCap := 100
 	t.Run("generates shortening for a given URL", func(t *testing.T) {
-		svc := service.NewService(context.TODO(), repository.NewInMemory())
+		svc := service.NewService(context.TODO(), repository.NewInMemory(initCap))
 		input := "https://practicum.yandex.ru/"
 
 		shortening, err := svc.Shorten(context.Background(), input, uuid.New())
@@ -27,8 +28,9 @@ func TestService_Shorten(t *testing.T) {
 }
 
 func TestService_ShortenBatch(t *testing.T) {
+	initCap := 100
 	t.Run("generates shortening for a given URL", func(t *testing.T) {
-		svc := service.NewService(context.TODO(), repository.NewInMemory())
+		svc := service.NewService(context.TODO(), repository.NewInMemory(initCap))
 		inputURLs := []string{"https://practicum.yandex.ru/", "https://practicum.yandex.ru/?1", "https://practicum.yandex.ru/?2", "https://practicum.yandex.ru/?3"}
 		userID := uuid.New()
 		inputs := make([]model.ShortenRequestBatch, 0, len(inputURLs))
@@ -47,8 +49,9 @@ func TestService_ShortenBatch(t *testing.T) {
 }
 
 func TestService_Redirect(t *testing.T) {
+	initCap := 100
 	t.Run("returns redirect URL for a given identifier", func(t *testing.T) {
-		inMemoryStorage := repository.NewInMemory()
+		inMemoryStorage := repository.NewInMemory(initCap)
 		svc := service.NewService(context.TODO(), inMemoryStorage)
 		input := "https://practicum.yandex.ru/"
 
@@ -62,7 +65,7 @@ func TestService_Redirect(t *testing.T) {
 	})
 
 	t.Run("returns error if identifier is not found", func(t *testing.T) {
-		var svc = service.NewService(context.TODO(), repository.NewInMemory())
+		var svc = service.NewService(context.TODO(), repository.NewInMemory(initCap))
 
 		_, err := svc.Redirect(context.Background(), "yandex")
 		assert.ErrorIs(t, err, model.ErrNotFound)

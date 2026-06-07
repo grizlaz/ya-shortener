@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"net/http"
+	"net/http/pprof"
 	"slices"
 
 	"github.com/grizlaz/ya-shortener/internal/audit"
@@ -51,6 +52,26 @@ func (s *Server) setupRouter() {
 	s.e.DELETE("/api/user/urls", HandleDeleteUserUrls(s.shortener))
 	s.e.GET("/:identifier", HandleRedirect(s.shortener, s.audit))
 	s.e.GET("/ping", HandlePing(context.TODO(), s.db))
+	s.e.Any("/debug/pprof", func(c echo.Context) error {
+		pprof.Index(c.Response().Writer, c.Request())
+		return nil
+	})
+	s.e.Any("/debug/pprof/cmdline", func(c echo.Context) error {
+		pprof.Cmdline(c.Response().Writer, c.Request())
+		return nil
+	})
+	s.e.Any("/debug/pprof/profile", func(c echo.Context) error {
+		pprof.Profile(c.Response().Writer, c.Request())
+		return nil
+	})
+	s.e.Any("/debug/pprof/symbol", func(c echo.Context) error {
+		pprof.Symbol(c.Response().Writer, c.Request())
+		return nil
+	})
+	s.e.Any("/debug/pprof/trace", func(c echo.Context) error {
+		pprof.Trace(c.Response().Writer, c.Request())
+		return nil
+	})
 	s.e.Any("/*", func(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "wrong url")
 	})

@@ -12,8 +12,8 @@ type inMemory struct {
 	m map[string]*model.Shortening
 }
 
-func NewInMemory() *inMemory {
-	return &inMemory{m: make(map[string]*model.Shortening)}
+func NewInMemory(cap int) *inMemory {
+	return &inMemory{m: make(map[string]*model.Shortening, cap)}
 }
 
 func (i *inMemory) Get(_ context.Context, shortURL string) (*model.Shortening, error) {
