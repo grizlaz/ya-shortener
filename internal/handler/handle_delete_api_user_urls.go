@@ -6,9 +6,10 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/labstack/echo/v4"
+
 	"github.com/grizlaz/ya-shortener/internal/logger"
 	"github.com/grizlaz/ya-shortener/internal/model"
-	"github.com/labstack/echo/v4"
 )
 
 type shortenerDeleteUserUrls interface {

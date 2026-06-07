@@ -7,11 +7,12 @@ import (
 	"net/http/pprof"
 	"slices"
 
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
+
 	"github.com/grizlaz/ya-shortener/internal/audit"
 	"github.com/grizlaz/ya-shortener/internal/logger"
 	"github.com/grizlaz/ya-shortener/internal/service"
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 )
 
 type Server struct {

@@ -9,11 +9,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/labstack/echo/v4"
+	"github.com/stretchr/testify/require"
+
 	"github.com/grizlaz/ya-shortener/internal/model"
 	"github.com/grizlaz/ya-shortener/internal/repository"
 	"github.com/grizlaz/ya-shortener/internal/service"
-	"github.com/labstack/echo/v4"
-	"github.com/stretchr/testify/require"
 )
 
 func TestHandleShortenBatch(t *testing.T) {

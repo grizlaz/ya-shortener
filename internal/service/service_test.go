@@ -6,11 +6,12 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"github.com/grizlaz/ya-shortener/internal/model"
 	"github.com/grizlaz/ya-shortener/internal/repository"
 	"github.com/grizlaz/ya-shortener/internal/service"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestService_Shorten(t *testing.T) {

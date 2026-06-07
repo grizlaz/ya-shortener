@@ -5,8 +5,9 @@ import (
 	"database/sql"
 	"net/http"
 
-	"github.com/grizlaz/ya-shortener/internal/logger"
 	"github.com/labstack/echo/v4"
+
+	"github.com/grizlaz/ya-shortener/internal/logger"
 )
 
 func HandlePing(ctx context.Context, db *sql.DB) echo.HandlerFunc {

@@ -1,9 +1,10 @@
 package audit
 
 import (
+	"go.uber.org/zap"
+
 	"github.com/grizlaz/ya-shortener/internal/logger"
 	"github.com/grizlaz/ya-shortener/internal/model"
-	"go.uber.org/zap"
 )
 
 type aduitObserver interface {

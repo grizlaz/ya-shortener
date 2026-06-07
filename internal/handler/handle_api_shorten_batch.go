@@ -7,10 +7,11 @@ import (
 	"net/http"
 
 	"github.com/google/uuid"
+	"github.com/labstack/echo/v4"
+
 	"github.com/grizlaz/ya-shortener/internal/logger"
 	"github.com/grizlaz/ya-shortener/internal/model"
 	"github.com/grizlaz/ya-shortener/internal/service"
-	"github.com/labstack/echo/v4"
 )
 
 type apiShortenerBatch interface {

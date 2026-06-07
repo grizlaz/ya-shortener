@@ -8,12 +8,13 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/labstack/echo/v4"
+	"github.com/stretchr/testify/require"
+
 	"github.com/grizlaz/ya-shortener/internal/audit"
 	"github.com/grizlaz/ya-shortener/internal/handler"
 	"github.com/grizlaz/ya-shortener/internal/repository"
 	"github.com/grizlaz/ya-shortener/internal/service"
-	"github.com/labstack/echo/v4"
-	"github.com/stretchr/testify/require"
 )
 
 func TestHandleShorten(t *testing.T) {

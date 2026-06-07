@@ -7,14 +7,15 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
+	"github.com/labstack/echo/v4"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"github.com/grizlaz/ya-shortener/internal/audit"
 	"github.com/grizlaz/ya-shortener/internal/handler"
 	"github.com/grizlaz/ya-shortener/internal/model"
 	"github.com/grizlaz/ya-shortener/internal/repository"
 	"github.com/grizlaz/ya-shortener/internal/service"
-	"github.com/labstack/echo/v4"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestHandleRedirect(t *testing.T) {
