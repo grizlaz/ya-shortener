@@ -1,3 +1,4 @@
+// Модуль handler обрабатывает все входящие запросы к сервису.
 package handler
 
 import (

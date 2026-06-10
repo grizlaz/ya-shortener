@@ -21,6 +21,13 @@ type userURL struct {
 	OriginalURL string `json:"original_url"`
 }
 
+// Handler для получения пользовательских ссылок.
+// Ответ:
+//
+//	{
+//		"short_url": "originalURL",
+//		"original_url":    "shortURL",
+//	}
 func HandleUserUrls(shortener shortenerUserUrls, baseURL string) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		userID, err := getUserID(c)

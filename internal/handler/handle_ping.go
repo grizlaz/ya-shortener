@@ -10,6 +10,7 @@ import (
 	"github.com/grizlaz/ya-shortener/internal/logger"
 )
 
+// Handler для проверки связи с БД.
 func HandlePing(ctx context.Context, db *sql.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		defer c.Request().Body.Close()

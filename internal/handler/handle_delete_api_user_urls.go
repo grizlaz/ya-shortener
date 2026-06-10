@@ -16,6 +16,11 @@ type shortenerDeleteUserUrls interface {
 	DeleteUserUrls(context.Context, model.DeleteUrls) error
 }
 
+// Handler для массового удаления пользовательских ссылок.
+// В теле запроса json массив строк
+// Запрос:
+//
+//	["shortURL1","shortURL2"]
 func HandleDeleteUserUrls(shortener shortenerDeleteUserUrls) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		defer c.Request().Body.Close()

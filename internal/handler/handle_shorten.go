@@ -20,6 +20,15 @@ type shortener interface {
 	Shorten(context.Context, string, uuid.UUID) (*model.Shortening, error)
 }
 
+// Handler для обработки сокращения ссылки.
+// Оригинальная ссылка ожидается в теле запроса в виде строки.
+// Запрос:
+//
+//	http://example.com
+//
+// Ответ:
+//
+//	http://localhost:8080/b9j5za
 func HandleShorten(shortener shortener, baseURL string, audit *audit.Audit) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		defer c.Request().Body.Close()

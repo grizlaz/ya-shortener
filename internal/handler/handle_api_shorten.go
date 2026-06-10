@@ -29,6 +29,19 @@ type shortenResponse struct {
 	Result string `json:"result"`
 }
 
+// Handler для обработки сокращения ссылки.
+// Оригинальная ссылка ожидается в теле запроса.
+// Запрос:
+//
+//	{
+//		"url":"http://example.com"
+//	}
+//
+// Ответ:
+//
+//	{
+//		"result":"res_url"
+//	}
 func HandleAPIShorten(shortener apiShortener, baseURL string, audit *audit.Audit) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		defer c.Request().Body.Close()

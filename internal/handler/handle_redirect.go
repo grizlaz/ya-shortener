@@ -17,6 +17,7 @@ type redirecter interface {
 	Redirect(ctx context.Context, identifier string) (string, error)
 }
 
+// Handler перенаправляет с сокращенной ссылки на оригинальную.
 func HandleRedirect(redirecter redirecter, audit *audit.Audit) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		identifier := c.Param("identifier")

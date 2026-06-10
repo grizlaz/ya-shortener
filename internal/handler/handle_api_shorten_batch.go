@@ -23,6 +23,25 @@ type batchResponse struct {
 	URL string `json:"short_url"`
 }
 
+// Handler для обработки массового сокращения ссылок.
+// В теле запроса json массив ссылок
+// Запрос:
+//	[
+//		{
+//			"correlation_id": "1",
+//			"original_url": "https://practicum.yandex.ru/?1"
+//		},
+//		...
+//	]
+// Ответ:
+//	[
+//		{
+//			"correlation_id": "1",
+//			"short_url": "https://practicum.yandex.ru/?1"
+//		},
+//		...
+//	]
+
 func HandleAPIShortenBatch(shortener apiShortenerBatch, baseURL string) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		defer c.Request().Body.Close()

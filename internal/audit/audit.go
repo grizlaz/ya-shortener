@@ -7,11 +7,6 @@ import (
 	"github.com/grizlaz/ya-shortener/internal/model"
 )
 
-type aduitObserver interface {
-	SendAuditMessage(message model.AuditMessage) error
-	GetID() string
-}
-
 type Audit struct {
 	observers map[string]*Observer
 }
