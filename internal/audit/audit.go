@@ -19,6 +19,9 @@ func NewAudit() *Audit {
 
 func (a *Audit) Send(message model.AuditMessage) {
 	var err error
+	if a == nil {
+		return
+	}
 	for _, o := range a.observers {
 		if err = o.SendAuditMessage(message); err != nil {
 			logger.Log.Error("error send audit message", zap.String("observerID", o.GetID()), zap.Error(err))

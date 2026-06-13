@@ -15,7 +15,7 @@ func Example() {
 	e := echo.New()
 
 	// Добавляем handler обработки запросов на получение сокращенной ссылки текстовой ссылки в теле запроса.
-	e.POST("/", handler.HandleShorten(shorten, baseURL, nil))
+	e.POST("/", handler.HandleShorten(shorten, baseURL, audit))
 	// Добавляем handler обработки запросов на получение сокращенной ссылки с json в теле запроса.
 	e.POST("/api/shorten", handler.HandleAPIShorten(shorten, baseURL, audit))
 	// Добавляем handler с пакетной загрузкой ссылок для сокращения.
