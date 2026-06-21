@@ -7,21 +7,25 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
+	"github.com/labstack/echo/v4"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	"github.com/grizlaz/ya-shortener/internal/audit"
 	"github.com/grizlaz/ya-shortener/internal/handler"
 	"github.com/grizlaz/ya-shortener/internal/model"
 	"github.com/grizlaz/ya-shortener/internal/repository"
 	"github.com/grizlaz/ya-shortener/internal/service"
-	"github.com/labstack/echo/v4"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestHandleRedirect(t *testing.T) {
+	initCap := 100
 	t.Run("redirects to original URL", func(t *testing.T) {
 		url := "https://practicum.yandex.ru"
 
-		redirecter := service.NewService(context.TODO(), repository.NewInMemory())
-		handler := handler.HandleRedirect(redirecter)
+		redirecter := service.NewService(context.TODO(), repository.NewInMemory(initCap))
+		audit := audit.NewAudit()
+		handler := handler.HandleRedirect(redirecter, audit)
 
 		shortening, err := redirecter.Shorten(context.Background(), url, uuid.New())
 		require.NoError(t, err)
@@ -43,8 +47,9 @@ func TestHandleRedirect(t *testing.T) {
 
 	t.Run("returns 404 if identifier is not found", func(t *testing.T) {
 		identifier := "ya"
-		redirecter := service.NewService(context.TODO(), repository.NewInMemory())
-		handler := handler.HandleRedirect(redirecter)
+		redirecter := service.NewService(context.TODO(), repository.NewInMemory(initCap))
+		audit := audit.NewAudit()
+		handler := handler.HandleRedirect(redirecter, audit)
 		recorder := httptest.NewRecorder()
 		request := httptest.NewRequest(http.MethodGet, "/"+identifier, nil)
 		e := echo.New()
@@ -60,9 +65,10 @@ func TestHandleRedirect(t *testing.T) {
 	t.Run("returns 410 if identifier is deleted", func(t *testing.T) {
 		url := "https://practicum.yandex.ru"
 
-		repository := repository.NewInMemory()
+		repository := repository.NewInMemory(initCap)
 		redirecter := service.NewService(context.TODO(), repository)
-		handler := handler.HandleRedirect(redirecter)
+		audit := audit.NewAudit()
+		handler := handler.HandleRedirect(redirecter, audit)
 
 		userID := uuid.New()
 		shortening, err := redirecter.Shorten(context.TODO(), url, userID)

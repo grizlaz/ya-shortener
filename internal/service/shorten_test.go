@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/grizlaz/ya-shortener/internal/service"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/grizlaz/ya-shortener/internal/service"
 )
 
 func TestShorten(t *testing.T) {

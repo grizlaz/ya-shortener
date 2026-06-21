@@ -8,22 +8,26 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/labstack/echo/v4"
+	"github.com/stretchr/testify/require"
+
+	"github.com/grizlaz/ya-shortener/internal/audit"
 	"github.com/grizlaz/ya-shortener/internal/handler"
 	"github.com/grizlaz/ya-shortener/internal/repository"
 	"github.com/grizlaz/ya-shortener/internal/service"
-	"github.com/labstack/echo/v4"
-	"github.com/stretchr/testify/require"
 )
 
 func TestHandleShorten(t *testing.T) {
+	initCap := 100
 	t.Run("get short url", func(t *testing.T) {
 		baseURL := "http://localhost:8080"
 		url := "https://practicum.yandex.ru"
 		path := "/api/shorten"
 		body := strings.NewReader(fmt.Sprintf(`{"url":"%s"}`, url))
 
-		shorten := service.NewService(context.Background(), repository.NewInMemory())
-		handler := handler.HandleAPIShorten(shorten, baseURL)
+		shorten := service.NewService(context.Background(), repository.NewInMemory(initCap))
+		audit := audit.NewAudit()
+		handler := handler.HandleAPIShorten(shorten, baseURL, audit)
 
 		recorder := httptest.NewRecorder()
 		request := httptest.NewRequest(http.MethodPost, path, body)

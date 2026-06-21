@@ -4,17 +4,21 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	"time"
 
+	"github.com/labstack/echo/v4"
+
+	"github.com/grizlaz/ya-shortener/internal/audit"
 	"github.com/grizlaz/ya-shortener/internal/logger"
 	"github.com/grizlaz/ya-shortener/internal/model"
-	"github.com/labstack/echo/v4"
 )
 
 type redirecter interface {
 	Redirect(ctx context.Context, identifier string) (string, error)
 }
 
-func HandleRedirect(redirecter redirecter) echo.HandlerFunc {
+// Handler перенаправляет с сокращенной ссылки на оригинальную.
+func HandleRedirect(redirecter redirecter, audit *audit.Audit) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		identifier := c.Param("identifier")
 
@@ -31,6 +35,11 @@ func HandleRedirect(redirecter redirecter) echo.HandlerFunc {
 			return echo.NewHTTPError(http.StatusInternalServerError)
 		}
 
+		audit.Send(model.AuditMessage{
+			TS:     time.Now().Unix(),
+			Action: "follow",
+			URL:    redirectURL,
+		})
 		return c.Redirect(http.StatusTemporaryRedirect, redirectURL)
 	}
 }

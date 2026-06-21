@@ -9,14 +9,16 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/labstack/echo/v4"
+	"github.com/stretchr/testify/require"
+
 	"github.com/grizlaz/ya-shortener/internal/model"
 	"github.com/grizlaz/ya-shortener/internal/repository"
 	"github.com/grizlaz/ya-shortener/internal/service"
-	"github.com/labstack/echo/v4"
-	"github.com/stretchr/testify/require"
 )
 
 func TestHandleShortenBatch(t *testing.T) {
+	initCap := 100
 	t.Run("short batch urls", func(t *testing.T) {
 		path := "/api/shorten/batch"
 		URLCount := 5
@@ -35,7 +37,7 @@ func TestHandleShortenBatch(t *testing.T) {
 		require.NoError(t, err)
 
 		body := bytes.NewReader(bodyData)
-		shorten := service.NewService(context.Background(), repository.NewInMemory())
+		shorten := service.NewService(context.Background(), repository.NewInMemory(initCap))
 		handler := HandleAPIShortenBatch(shorten, baseURL)
 
 		recorder := httptest.NewRecorder()

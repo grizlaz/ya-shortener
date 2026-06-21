@@ -22,5 +22,9 @@ vendor/
 .idea
 .vscode
 
+.DS_Store
+
 
 storage.txt
+audit.txt
+test.http

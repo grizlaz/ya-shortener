@@ -5,10 +5,11 @@ import (
 	"net/http"
 
 	"github.com/google/uuid"
+	"github.com/labstack/echo/v4"
+
 	"github.com/grizlaz/ya-shortener/internal/logger"
 	"github.com/grizlaz/ya-shortener/internal/model"
 	"github.com/grizlaz/ya-shortener/internal/service"
-	"github.com/labstack/echo/v4"
 )
 
 type shortenerUserUrls interface {
@@ -20,6 +21,13 @@ type userURL struct {
 	OriginalURL string `json:"original_url"`
 }
 
+// Handler для получения пользовательских ссылок.
+// Ответ:
+//
+//	{
+//		"short_url": "originalURL",
+//		"original_url":    "shortURL",
+//	}
 func HandleUserUrls(shortener shortenerUserUrls, baseURL string) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		userID, err := getUserID(c)

@@ -1,7 +1,7 @@
 POST http://localhost:8080/
 Content-Type: text/plain
 
-https://practicum.yandex.ru/?33
+https://practicum.yandex.ru/?audit
 
 POST http://localhost:8080/
 Content-Type: text/plain

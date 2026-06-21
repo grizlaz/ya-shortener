@@ -7,10 +7,11 @@ import (
 	"net/http"
 
 	"github.com/google/uuid"
+	"github.com/labstack/echo/v4"
+
 	"github.com/grizlaz/ya-shortener/internal/logger"
 	"github.com/grizlaz/ya-shortener/internal/model"
 	"github.com/grizlaz/ya-shortener/internal/service"
-	"github.com/labstack/echo/v4"
 )
 
 type apiShortenerBatch interface {
@@ -21,6 +22,25 @@ type batchResponse struct {
 	ID  string `json:"correlation_id"`
 	URL string `json:"short_url"`
 }
+
+// Handler для обработки массового сокращения ссылок.
+// В теле запроса json массив ссылок
+// Запрос:
+//	[
+//		{
+//			"correlation_id": "1",
+//			"original_url": "https://practicum.yandex.ru/?1"
+//		},
+//		...
+//	]
+// Ответ:
+//	[
+//		{
+//			"correlation_id": "1",
+//			"short_url": "https://practicum.yandex.ru/?1"
+//		},
+//		...
+//	]
 
 func HandleAPIShortenBatch(shortener apiShortenerBatch, baseURL string) echo.HandlerFunc {
 	return func(c echo.Context) error {

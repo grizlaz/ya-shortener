@@ -16,6 +16,8 @@ type config struct {
 	DatabaseDSN     string
 	TokenExp        time.Duration
 	SecretKey       []byte
+	AuditFilePath   string
+	AuditURL        string
 }
 
 var (
@@ -38,6 +40,8 @@ func Get() config {
 		})
 		flag.StringVar(&cfg.FileStoragePath, "f", "storage.txt", "storage path")
 		flag.StringVar(&cfg.DatabaseDSN, "d", "", "DSN for db")
+		flag.StringVar(&cfg.AuditFilePath, "audit-file", "", "path to audit file")
+		flag.StringVar(&cfg.AuditURL, "audit-url", "", "audit url")
 
 		flag.Parse()
 		if envBaseURL := os.Getenv("BASE_URL"); envBaseURL != "" {
@@ -54,6 +58,12 @@ func Get() config {
 		}
 		if envDBDSN := os.Getenv("DATABASE_DSN"); envDBDSN != "" {
 			cfg.DatabaseDSN = envDBDSN
+		}
+		if envAuditFilePath := os.Getenv("AUDIT_FILE"); envAuditFilePath != "" {
+			cfg.AuditFilePath = envAuditFilePath
+		}
+		if envAuditURL := os.Getenv("AUDIT_URL"); envAuditURL != "" {
+			cfg.AuditURL = envAuditURL
 		}
 	})
 	return cfg

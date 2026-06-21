@@ -8,11 +8,12 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
-	"github.com/grizlaz/ya-shortener/internal/model"
 	"github.com/jackc/pgerrcode"
 	_ "github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/pressly/goose/v3"
+
+	"github.com/grizlaz/ya-shortener/internal/model"
 )
 
 type postgres struct {
