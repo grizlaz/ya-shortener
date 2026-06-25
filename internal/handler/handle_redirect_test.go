@@ -74,7 +74,8 @@ func TestHandleRedirect(t *testing.T) {
 		shortening, err := redirecter.Shorten(context.TODO(), url, userID)
 		require.NoError(t, err)
 		identifier := shortening.ShortURL
-		repository.DeleteUserUrls(context.TODO(), model.DeleteUrls{UserID: userID, Urls: &[]string{identifier}})
+		err = repository.DeleteUserUrls(context.TODO(), model.DeleteUrls{UserID: userID, Urls: &[]string{identifier}})
+		require.NoError(t, err)
 
 		recorder := httptest.NewRecorder()
 		request := httptest.NewRequest(http.MethodGet, "/"+identifier, nil)

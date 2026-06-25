@@ -13,6 +13,7 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/pressly/goose/v3"
 
+	"github.com/grizlaz/ya-shortener/internal/logger"
 	"github.com/grizlaz/ya-shortener/internal/model"
 )
 
@@ -78,19 +79,27 @@ func (p *postgres) PutBatch(ctx context.Context, shortens *[]model.Shortening) (
 	if err != nil {
 		return 0, err
 	}
-	defer tx.Rollback()
+	defer func() {
+		if derr := tx.Rollback(); derr != nil {
+			logger.Log.Sugar().Errorf("error defer tx.Rollback(): %v", derr)
+		}
+	}()
 	stmt, err := tx.PrepareContext(ctx, insertQuery)
 	if err != nil {
 		return 0, err
 	}
-	defer stmt.Close()
+	defer func() {
+		if derr := stmt.Close(); derr != nil {
+			logger.Log.Sugar().Errorf("error defer stmt.Close(): %v", derr)
+		}
+	}()
 
 	for _, v := range *shortens {
-		res, err := stmt.ExecContext(ctx, v.OriginalURL, v.ShortURL, v.UserID, v.IsDeleted)
-		if err != nil {
-			return 0, err
+		res, errFor := stmt.ExecContext(ctx, v.OriginalURL, v.ShortURL, v.UserID, v.IsDeleted)
+		if errFor != nil {
+			return 0, errFor
 		}
-		if ins, err := res.RowsAffected(); err == nil {
+		if ins, errFor := res.RowsAffected(); errFor == nil {
 			inserts += ins
 		}
 	}
@@ -109,7 +118,11 @@ func (p *postgres) GetUserUrls(ctx context.Context, userID uuid.UUID) (*[]model.
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() {
+		if derr := rows.Close(); derr != nil {
+			logger.Log.Sugar().Errorf("error defer rows.Close(): %v", derr)
+		}
+	}()
 
 	shortenings := make([]model.Shortening, 0)
 	for rows.Next() {

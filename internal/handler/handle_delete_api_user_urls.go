@@ -23,7 +23,11 @@ type shortenerDeleteUserUrls interface {
 //	["shortURL1","shortURL2"]
 func HandleDeleteUserUrls(shortener shortenerDeleteUserUrls) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		defer c.Request().Body.Close()
+		defer func() {
+			if derr := c.Request().Body.Close(); derr != nil {
+				logger.Log.Sugar().Errorf("error defer c.Request().Body.Close(): %v", derr)
+			}
+		}()
 		body, err := io.ReadAll(c.Request().Body)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, err)

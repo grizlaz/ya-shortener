@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
+	"github.com/stretchr/testify/require"
 
 	"github.com/grizlaz/ya-shortener/internal/model"
 	"github.com/grizlaz/ya-shortener/internal/repository"
@@ -28,6 +29,7 @@ func BenchmarkShortenBatch(b *testing.B) {
 	b.ResetTimer()
 
 	for b.Loop() {
-		service.ShortenBatch(context.Background(), &urls, userID)
+		_, err := service.ShortenBatch(context.Background(), &urls, userID)
+		require.NoError(b, err)
 	}
 }

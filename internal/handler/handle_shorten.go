@@ -31,7 +31,11 @@ type shortener interface {
 //	http://localhost:8080/b9j5za
 func HandleShorten(shortener shortener, baseURL string, audit *audit.Audit) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		defer c.Request().Body.Close()
+		defer func() {
+			if derr := c.Request().Body.Close(); derr != nil {
+				logger.Log.Sugar().Errorf("error defer c.Request().Body.Close(): %v", derr)
+			}
+		}()
 
 		contentType := c.Request().Header.Get("Content-Type")
 		if contentType != "text/plain" {

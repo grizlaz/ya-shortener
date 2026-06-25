@@ -31,7 +31,11 @@ func main() {
 		if err != nil {
 			logger.Log.Sugar().Fatalf("error init db: %w", err)
 		}
-		defer db.Close()
+		defer func() {
+			if derr := db.Close(); derr != nil {
+				logger.Log.Sugar().Errorf("error defer db.Close(): %v", derr)
+			}
+		}()
 		shorteningStorage, err = repository.NewPostgresDB(db)
 	} else {
 		shorteningStorage, err = repository.NewInFile(cfg.FileStoragePath, false)
