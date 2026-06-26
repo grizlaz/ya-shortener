@@ -7,6 +7,7 @@ import (
 	"github.com/grizlaz/ya-shortener/internal/model"
 )
 
+// generate:reset
 type Audit struct {
 	observers map[string]*Observer
 }
@@ -36,38 +37,3 @@ func (a *Audit) Register(o *Observer) {
 func (a *Audit) Deregister(o Observer) {
 	delete(a.observers, o.GetID())
 }
-
-//Хотел через middleware сделать, но что-то муторно получать action, url
-// func WithAudit(auditSrv *Audit) echo.MiddlewareFunc {
-// 	return func(next echo.HandlerFunc) echo.HandlerFunc {
-// 		return func(c echo.Context) error {
-// 			err := next(c)
-// 			auditMessage := getAuditMessage(c)
-// 			if auditMessage != nil {
-// 				auditSrv.Send(*auditMessage)
-// 			}
-// 			return err
-// 		}
-// 	}
-// }
-
-// func getAuditMessage(c echo.Context) *model.AuditMessage {
-// 	action := ""
-// 	isShorten := c.Request().Method == "POST" && c.Request().URL.Path == ""
-// 	isApiShorten := c.Request().Method == "POST" && c.Request().URL.Path == "api/shorten"
-// 	if isShorten || isApiShorten {
-// 		action = "shorten"
-// 	}
-// 	isRedirect := !(isShorten || isApiShorten) && c.Request().Method == "GET" && c.Param("identifier") != ""
-// 	if isRedirect {
-// 		action = "follow"
-// 	}
-// 	if action == "" {
-// 		return nil
-// 	}
-// 	message := &model.AuditMessage{
-// 		Ts:     time.Now().Unix(),
-// 		Action: action,
-// 	}
-// 	return message
-// }
