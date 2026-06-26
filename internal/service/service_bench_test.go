@@ -28,8 +28,9 @@ func BenchmarkShortenBatch(b *testing.B) {
 
 	b.ResetTimer()
 
+	var err error
 	for b.Loop() {
-		_, err := service.ShortenBatch(context.Background(), &urls, userID)
+		_, err = service.ShortenBatch(context.Background(), &urls, userID)
 		require.NoError(b, err)
 	}
 }
