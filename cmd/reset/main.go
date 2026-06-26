@@ -61,14 +61,6 @@ func findStructsWithResetComment(rootDir string) (map[string]*PackageInfo, error
 		if err != nil {
 			return err
 		}
-		if d.IsDir() {
-			// Пропускаем vendor и testdata (можно убрать, если нужно)
-			name := d.Name()
-			if name == "vendor" || name == "testdata" {
-				return filepath.SkipDir
-			}
-			return nil
-		}
 
 		if !strings.HasSuffix(path, ".go") || strings.HasSuffix(path, "_test.go") {
 			return nil
@@ -169,7 +161,6 @@ func generateMethod(st StructInfo) string {
 	for _, field := range st.Fields {
 		var accessor string
 		if len(field.Names) > 0 {
-			// Обычное поле
 			accessor = "rs." + field.Names[0].Name
 		} else {
 			switch t := field.Type.(type) {
