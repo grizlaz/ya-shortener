@@ -11,6 +11,7 @@ type Resetter interface {
 type Pool[T Resetter] struct {
 	mu    sync.Mutex
 	items []T
+	New   func() T
 }
 
 func New[T Resetter]() *Pool[T] {
@@ -27,8 +28,12 @@ func (p *Pool[T]) Get() T {
 		return v
 	}
 
-	v := new(T)
-	return *v
+	if p.New != nil {
+		return p.New()
+	}
+
+	var v T
+	return v
 }
 
 func (p *Pool[T]) Put(v T) {
