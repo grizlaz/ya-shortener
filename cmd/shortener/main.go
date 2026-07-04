@@ -1,12 +1,23 @@
 package main
 
 import (
+	"bytes"
 	"context"
+	"crypto/rand"
+	"crypto/rsa"
+	"crypto/x509"
+	"crypto/x509/pkix"
 	"database/sql"
+	"encoding/pem"
 	"errors"
 	"fmt"
+	"math/big"
+	"net"
 	"net/http"
 	_ "net/http/pprof"
+	"os"
+	"path/filepath"
+	"time"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 
@@ -61,9 +72,82 @@ func main() {
 
 	shortener := service.NewService(context.Background(), shorteningStorage)
 	srv := handler.NewServer(shortener, cfg.BaseURL, db, auditService)
-	if err := http.ListenAndServe(cfg.ServerAddress, srv); !errors.Is(err, http.ErrServerClosed) {
-		logger.Log.Sugar().Fatalf("error running server: %w", err)
+	if cfg.EnableHTTPS {
+		cert, key, err := generateCrt()
+		if err != nil {
+			logger.Log.Sugar().Fatalf("error creating cert: %v", err)
+		}
+		defer os.Remove(cert)
+		defer os.Remove(key)
+		err = http.ListenAndServeTLS(cfg.ServerAddress, cert, key, srv)
+		if err != nil && !errors.Is(err, http.ErrServerClosed) {
+			logger.Log.Sugar().Fatalf("error running server: %v", err)
+		}
+	} else {
+		err = http.ListenAndServe(cfg.ServerAddress, srv)
+		if err != nil && !errors.Is(err, http.ErrServerClosed) {
+			logger.Log.Sugar().Fatalf("error running server: %v", err)
+		}
 	}
+}
+
+func generateCrt() (string, string, error) {
+	privateKey, err := rsa.GenerateKey(rand.Reader, 4096)
+	if err != nil {
+		return "", "", err
+	}
+	publicKey := privateKey.Public()
+	cert := &x509.Certificate{
+		SerialNumber: big.NewInt(1),
+		Subject: pkix.Name{
+			Organization: []string{"iter24"},
+			Country:      []string{"RU"},
+		},
+		IPAddresses:  []net.IP{net.IPv4(127, 0, 0, 1), net.IPv6loopback},
+		NotBefore:    time.Now(),
+		NotAfter:     time.Now().AddDate(10, 0, 0),
+		SubjectKeyId: []byte{1, 2, 3, 4, 6},
+		ExtKeyUsage:  []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth, x509.ExtKeyUsageServerAuth},
+		KeyUsage:     x509.KeyUsageDigitalSignature,
+	}
+	certBytes, err := x509.CreateCertificate(rand.Reader, cert, cert, publicKey, privateKey)
+	if err != nil {
+		return "", "", err
+	}
+
+	var certPEM bytes.Buffer
+	err = pem.Encode(&certPEM, &pem.Block{
+		Type:  "CERTIFICATE",
+		Bytes: certBytes,
+	})
+	if err != nil {
+		return "", "", err
+	}
+
+	var privateKeyPEM bytes.Buffer
+	err = pem.Encode(&privateKeyPEM, &pem.Block{
+		Type:  "RSA PRIVATE KEY",
+		Bytes: x509.MarshalPKCS1PrivateKey(privateKey),
+	})
+	if err != nil {
+		return "", "", err
+	}
+
+	tmp, err := os.MkdirTemp("", "tmp")
+	if err != nil {
+		return "", "", err
+	}
+
+	crtName := filepath.Join(tmp, "cert.pem")
+	if err = os.WriteFile(crtName, certPEM.Bytes(), 0644); err != nil {
+		return "", "", err
+	}
+	keyName := filepath.Join(tmp, "key.pem")
+	if err = os.WriteFile(keyName, privateKeyPEM.Bytes(), 0644); err != nil {
+		return "", "", err
+	}
+
+	return crtName, keyName, nil
 }
 
 func setDefaultBuildInfo() {

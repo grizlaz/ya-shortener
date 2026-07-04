@@ -18,6 +18,7 @@ type config struct {
 	SecretKey       []byte
 	AuditFilePath   string
 	AuditURL        string
+	EnableHTTPS     bool
 }
 
 var (
@@ -42,6 +43,7 @@ func Get() config {
 		flag.StringVar(&cfg.DatabaseDSN, "d", "", "DSN for db")
 		flag.StringVar(&cfg.AuditFilePath, "audit-file", "", "path to audit file")
 		flag.StringVar(&cfg.AuditURL, "audit-url", "", "audit url")
+		flag.BoolVar(&cfg.EnableHTTPS, "s", false, "enable tls")
 
 		flag.Parse()
 		if envBaseURL := os.Getenv("BASE_URL"); envBaseURL != "" {
@@ -64,6 +66,9 @@ func Get() config {
 		}
 		if envAuditURL := os.Getenv("AUDIT_URL"); envAuditURL != "" {
 			cfg.AuditURL = envAuditURL
+		}
+		if envEnableHTTPS := os.Getenv("ENABLE_HTTPS"); envEnableHTTPS != "" {
+			cfg.EnableHTTPS = true
 		}
 	})
 	return cfg
