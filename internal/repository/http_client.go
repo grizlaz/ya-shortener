@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/grizlaz/ya-shortener/internal/logger"
 	"github.com/grizlaz/ya-shortener/internal/model"
 )
 
@@ -30,7 +31,11 @@ func (a *auditClient) SendAuditMessage(message model.AuditMessage) error {
 	if err != nil {
 		return fmt.Errorf("error send audit message: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if derr := resp.Body.Close(); derr != nil {
+			logger.Log.Sugar().Errorf("error defer resp.Request().Body.Close(): %v", derr)
+		}
+	}()
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("error send audit message: %d", resp.StatusCode)
 	}

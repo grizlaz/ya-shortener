@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"net/http"
 	_ "net/http/pprof"
 
@@ -17,7 +18,17 @@ import (
 	"github.com/grizlaz/ya-shortener/internal/service"
 )
 
+var (
+	buildVersion string
+	buildDate    string
+	buildCommit  string
+)
+
 func main() {
+	setDefaultBuildInfo()
+	fmt.Printf("Build version: %s\n", buildVersion)
+	fmt.Printf("Build date: %s\n", buildDate)
+	fmt.Printf("Build commit: %s\n", buildCommit)
 	var err error
 	if err = logger.Initialize("info"); err != nil {
 		panic(err)
@@ -31,7 +42,11 @@ func main() {
 		if err != nil {
 			logger.Log.Sugar().Fatalf("error init db: %w", err)
 		}
-		defer db.Close()
+		defer func() {
+			if derr := db.Close(); derr != nil {
+				logger.Log.Sugar().Errorf("error defer db.Close(): %v", derr)
+			}
+		}()
 		shorteningStorage, err = repository.NewPostgresDB(db)
 	} else {
 		shorteningStorage, err = repository.NewInFile(cfg.FileStoragePath, false)
@@ -48,6 +63,18 @@ func main() {
 	srv := handler.NewServer(shortener, cfg.BaseURL, db, auditService)
 	if err := http.ListenAndServe(cfg.ServerAddress, srv); !errors.Is(err, http.ErrServerClosed) {
 		logger.Log.Sugar().Fatalf("error running server: %w", err)
+	}
+}
+
+func setDefaultBuildInfo() {
+	if buildVersion == "" {
+		buildVersion = "N/A"
+	}
+	if buildDate == "" {
+		buildDate = "N/A"
+	}
+	if buildCommit == "" {
+		buildCommit = "N/A"
 	}
 }
 

@@ -44,7 +44,11 @@ type shortenResponse struct {
 //	}
 func HandleAPIShorten(shortener apiShortener, baseURL string, audit *audit.Audit) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		defer c.Request().Body.Close()
+		defer func() {
+			if derr := c.Request().Body.Close(); derr != nil {
+				logger.Log.Sugar().Errorf("error defer c.Request().Body.Close(): %v", derr)
+			}
+		}()
 		body, err := io.ReadAll(c.Request().Body)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, err)

@@ -28,3 +28,4 @@ vendor/
 storage.txt
 audit.txt
 test.http
+/staticlint

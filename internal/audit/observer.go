@@ -8,6 +8,7 @@ type auditStorage interface {
 	SendAuditMessage(message model.AuditMessage) error
 }
 
+// generate:reset
 type Observer struct {
 	id      string
 	storage auditStorage

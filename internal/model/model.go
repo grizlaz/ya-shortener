@@ -49,6 +49,7 @@ type DeleteUrls struct {
 }
 
 // AuditMessage отвечает за структуру сообщений в аудит
+// generate:reset
 type AuditMessage struct {
 	TS     int64  `json:"ts"`
 	Action string `json:"action"`
