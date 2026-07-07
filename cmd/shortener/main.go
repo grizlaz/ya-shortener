@@ -16,10 +16,13 @@ import (
 	"net/http"
 	_ "net/http/pprof"
 	"os"
+	"os/signal"
 	"path/filepath"
+	"syscall"
 	"time"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
+	"go.uber.org/zap"
 
 	"github.com/grizlaz/ya-shortener/internal/audit"
 	"github.com/grizlaz/ya-shortener/internal/config"
@@ -70,8 +73,13 @@ func main() {
 		logger.Log.Sugar().Fatalf("error init audit service: %w", err)
 	}
 
-	shortener := service.NewService(context.Background(), shorteningStorage)
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT)
+
+	ctx := context.Background()
+	shortener := service.NewService(ctx, shorteningStorage)
 	srv := handler.NewServer(shortener, cfg.BaseURL, db, auditService)
+	//TODO не придумал как тут сделать одним вызовом
 	if cfg.EnableHTTPS {
 		cert, key, err := generateCrt()
 		if err != nil {
@@ -79,16 +87,29 @@ func main() {
 		}
 		defer os.Remove(cert)
 		defer os.Remove(key)
-		err = http.ListenAndServeTLS(cfg.ServerAddress, cert, key, srv)
-		if err != nil && !errors.Is(err, http.ErrServerClosed) {
-			logger.Log.Sugar().Fatalf("error running server: %v", err)
-		}
+		go func() {
+			if err := http.ListenAndServeTLS(cfg.ServerAddress, cert, key, srv); !errors.Is(err, http.ErrServerClosed) {
+				logger.Log.Sugar().Fatalf("error running server: %v", err)
+			}
+		}()
 	} else {
-		err = http.ListenAndServe(cfg.ServerAddress, srv)
-		if err != nil && !errors.Is(err, http.ErrServerClosed) {
-			logger.Log.Sugar().Fatalf("error running server: %v", err)
-		}
+		go func() {
+			if err := http.ListenAndServe(cfg.ServerAddress, srv); !errors.Is(err, http.ErrServerClosed) {
+				logger.Log.Sugar().Fatalf("error running server: %v", err)
+			}
+		}()
 	}
+	logger.Log.Info("server started")
+	<-quit
+
+	shutdowCtx, shutdownCancel := context.WithTimeout(ctx, 5*time.Second)
+	defer shutdownCancel()
+
+	if err := srv.Shutdown(shutdowCtx); err != nil {
+		logger.Log.Fatal("error closing server", zap.Error(err))
+	}
+
+	logger.Log.Info("server stopped")
 }
 
 func generateCrt() (string, string, error) {
