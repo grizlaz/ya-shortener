@@ -79,6 +79,9 @@ func main() {
 	ctx := context.Background()
 	shortener := service.NewService(ctx, shorteningStorage)
 	srv := handler.NewServer(shortener, cfg.BaseURL, db, auditService)
+
+	server := &http.Server{Addr: cfg.ServerAddress, Handler: srv}
+
 	//TODO не придумал как тут сделать одним вызовом
 	if cfg.EnableHTTPS {
 		cert, key, err := generateCrt()
@@ -88,13 +91,13 @@ func main() {
 		defer os.Remove(cert)
 		defer os.Remove(key)
 		go func() {
-			if err := http.ListenAndServeTLS(cfg.ServerAddress, cert, key, srv); !errors.Is(err, http.ErrServerClosed) {
+			if err := server.ListenAndServeTLS(cert, key); !errors.Is(err, http.ErrServerClosed) {
 				logger.Log.Sugar().Fatalf("error running server: %v", err)
 			}
 		}()
 	} else {
 		go func() {
-			if err := http.ListenAndServe(cfg.ServerAddress, srv); !errors.Is(err, http.ErrServerClosed) {
+			if err := server.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
 				logger.Log.Sugar().Fatalf("error running server: %v", err)
 			}
 		}()
