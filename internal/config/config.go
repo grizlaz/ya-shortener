@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"flag"
+	"fmt"
 	"os"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -32,14 +34,15 @@ var (
 )
 
 const baseURLDefault = "http://localhost:8080"
+const serverAddressDefault = ":8080"
 
 func Get() config {
 	once.Do(func() {
 		cfg.SecretKey = []byte("supersecretkey")
 		cfg.TokenExp = time.Hour * 3
 		cfg.BaseURL = baseURLDefault
-		flag.StringVar(&cfg.ServerAddress, "a", ":8080", "address and port to run server")
-		flag.Func("b", `address and port before short url (default "http://localhost:8080")`, func(s string) error {
+		flag.StringVar(&cfg.ServerAddress, "a", serverAddressDefault, "address and port to run server")
+		flag.Func("b", fmt.Sprintf("address and port before short url (default \"%s\")", baseURLDefault), func(s string) error {
 			if err := checkBaseURL(s); err != nil {
 				return err
 			}
@@ -73,7 +76,7 @@ func parseConfigFile(path string) {
 	if err != nil {
 		logger.Log.Fatal("error parsing config file", zap.Error(err))
 	}
-	if fileCfg.ServerAddress != "" && cfg.ServerAddress == "" {
+	if fileCfg.ServerAddress != "" && cfg.ServerAddress == serverAddressDefault {
 		cfg.ServerAddress = fileCfg.ServerAddress
 	}
 	if fileCfg.BaseURL != "" && cfg.BaseURL == baseURLDefault {
@@ -96,7 +99,7 @@ func parseConfigFile(path string) {
 func parseEnvVars() {
 	if envBaseURL := os.Getenv("BASE_URL"); envBaseURL != "" {
 		if err := checkBaseURL(envBaseURL); err != nil {
-			panic(err)
+			logger.Log.Fatal("error parsing BASE_URL from env", zap.Error(err))
 		}
 		cfg.BaseURL = envBaseURL
 	}
@@ -116,7 +119,11 @@ func parseEnvVars() {
 		cfg.AuditURL = envAuditURL
 	}
 	if envEnableHTTPS := os.Getenv("ENABLE_HTTPS"); envEnableHTTPS != "" {
-		cfg.EnableHTTPS = true
+		v, err := strconv.ParseBool(envEnableHTTPS)
+		if err != nil {
+			logger.Log.Fatal("error parsing ENABLE_HTTPS from env", zap.Error(err))
+		}
+		cfg.EnableHTTPS = v
 	}
 	if envPathToConfig := os.Getenv("CONFIG"); envPathToConfig != "" {
 		cfg.ConfigPath = envPathToConfig
