@@ -29,3 +29,4 @@ storage.txt
 audit.txt
 test.http
 /staticlint
+config.json
