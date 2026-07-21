@@ -38,6 +38,7 @@ func NewServer(shortener *service.Service, baseURL string, db *sql.DB, audit *au
 
 func (s *Server) setupRouter() {
 	s.e = echo.New()
+	s.e.IPExtractor = echo.ExtractIPDirect()
 	s.e.HideBanner = true
 
 	s.e.Pre(middleware.RemoveTrailingSlash())
@@ -54,6 +55,7 @@ func (s *Server) setupRouter() {
 	s.e.DELETE("/api/user/urls", HandleDeleteUserUrls(s.shortener))
 	s.e.GET("/:identifier", HandleRedirect(s.shortener, s.audit))
 	s.e.GET("/ping", HandlePing(context.TODO(), s.db))
+	s.e.GET("/api/internal/stats", HandleGetStats(s.shortener))
 	s.e.Any("/debug/pprof", func(c echo.Context) error {
 		pprof.Index(c.Response().Writer, c.Request())
 		return nil

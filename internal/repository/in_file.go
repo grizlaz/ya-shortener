@@ -147,3 +147,12 @@ func (s *inFileStorage) DeleteUserUrls(ctx context.Context, deleteUrls ...model.
 func (s *inFileStorage) SendAuditMessage(message model.AuditMessage) error {
 	return s.encoder.Encode(&message)
 }
+
+func (s *inFileStorage) GetUrlsCount(ctx context.Context) (int, error) {
+	// TODO если нужны только актиывные, то логика сложнее будет
+	return s.inMemory.GetUrlsCount(ctx)
+}
+
+func (s *inFileStorage) GetUsersCount(ctx context.Context) (int, error) {
+	return s.inMemory.GetUsersCount(ctx)
+}
