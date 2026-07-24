@@ -71,6 +71,10 @@ func getUserID(c echo.Context) (uuid.UUID, error) {
 		return uuid.Nil, err
 	}
 	tokenString := userCookie.Value
+	return GetUserIDFromToken(tokenString)
+}
+
+func GetUserIDFromToken(tokenString string) (uuid.UUID, error) {
 	cfg := config.Get()
 
 	claims := &model.UserClaims{}
