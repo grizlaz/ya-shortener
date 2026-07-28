@@ -11,7 +11,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-var userIDName = "userID"
+const userIDName = "userID"
 
 func WithAuthInterceptor(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
 	userID, err := GetUserIDFromMd(ctx)
@@ -45,9 +45,9 @@ func GetUserIDFromContext(ctx context.Context) (uuid.UUID, error) {
 	if v == nil {
 		return uuid.Nil, fmt.Errorf("not found %s in context", userIDName)
 	}
-	vUuid, ok := v.(uuid.UUID)
+	vUUID, ok := v.(uuid.UUID)
 	if !ok {
 		return uuid.Nil, fmt.Errorf("cant cast %v to uuid.UUID", v)
 	}
-	return vUuid, nil
+	return vUUID, nil
 }
