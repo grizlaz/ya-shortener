@@ -11,14 +11,15 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-const userIDName = "userID"
+// go vet не пропускал со строкой
+type ctxUserID struct{}
 
 func WithAuthInterceptor(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
 	userID, err := GetUserIDFromMd(ctx)
 	if err != nil {
 		return nil, err
 	}
-	ctxWithUserID := context.WithValue(ctx, userIDName, userID)
+	ctxWithUserID := context.WithValue(ctx, ctxUserID{}, userID)
 	return handler(ctxWithUserID, req)
 }
 
@@ -41,9 +42,9 @@ func GetUserIDFromMd(ctx context.Context) (uuid.UUID, error) {
 }
 
 func GetUserIDFromContext(ctx context.Context) (uuid.UUID, error) {
-	v := ctx.Value(userIDName)
+	v := ctx.Value(ctxUserID{})
 	if v == nil {
-		return uuid.Nil, fmt.Errorf("not found %s in context", userIDName)
+		return uuid.Nil, fmt.Errorf("not found %s in context", ctxUserID{})
 	}
 	vUUID, ok := v.(uuid.UUID)
 	if !ok {
