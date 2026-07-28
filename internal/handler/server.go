@@ -38,7 +38,7 @@ func NewServer(shortener *service.Service, baseURL string, db *sql.DB, audit *au
 
 func (s *Server) setupRouter() {
 	s.e = echo.New()
-	s.e.IPExtractor = echo.ExtractIPDirect()
+	s.e.IPExtractor = echo.ExtractIPFromRealIPHeader()
 	s.e.HideBanner = true
 
 	s.e.Pre(middleware.RemoveTrailingSlash())

@@ -11,17 +11,21 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+var userIDName = "userID"
+
 func WithAuthInterceptor(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
-	if _, err := GetUserIDFromContext(ctx); err != nil {
+	userID, err := GetUserIDFromMd(ctx)
+	if err != nil {
 		return nil, err
 	}
-	return handler(ctx, req)
+	ctxWithUserID := context.WithValue(ctx, userIDName, userID)
+	return handler(ctxWithUserID, req)
 }
 
-func GetUserIDFromContext(ctx context.Context) (uuid.UUID, error) {
+func GetUserIDFromMd(ctx context.Context) (uuid.UUID, error) {
 	token := ""
 	if md, ok := metadata.FromIncomingContext(ctx); ok {
-		values := md.Get("token")
+		values := md.Get("authorization")
 		if len(values) > 0 {
 			token = values[0]
 		}
@@ -34,4 +38,16 @@ func GetUserIDFromContext(ctx context.Context) (uuid.UUID, error) {
 		return uuid.Nil, status.Error(codes.InvalidArgument, fmt.Sprintf("error get user ID: %v", err))
 	}
 	return userID, nil
+}
+
+func GetUserIDFromContext(ctx context.Context) (uuid.UUID, error) {
+	v := ctx.Value(userIDName)
+	if v == nil {
+		return uuid.Nil, fmt.Errorf("not found %s in context", userIDName)
+	}
+	vUuid, ok := v.(uuid.UUID)
+	if !ok {
+		return uuid.Nil, fmt.Errorf("cant cast %v to uuid.UUID", v)
+	}
+	return vUuid, nil
 }
