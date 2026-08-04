@@ -69,3 +69,16 @@ func (i *inMemory) DeleteUserUrls(ctx context.Context, deleteUrls ...model.Delet
 	}
 	return nil
 }
+
+func (i *inMemory) GetUrlsCount(ctx context.Context) (int, error) {
+	// TODO если нужны только актиывные, то логика сложнее будет
+	return len(i.m), nil
+}
+
+func (i *inMemory) GetUsersCount(ctx context.Context) (int, error) {
+	users := make(map[uuid.UUID]struct{})
+	for _, s := range i.m {
+		users[s.UserID] = struct{}{}
+	}
+	return len(users), nil
+}

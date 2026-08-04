@@ -5,6 +5,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"net"
 	"os"
 	"strconv"
 	"strings"
@@ -26,6 +27,8 @@ type config struct {
 	AuditURL        string
 	EnableHTTPS     bool `json:"enable_https"`
 	ConfigPath      string
+	TrustedSubnet   string `json:"trusted_subnet"`
+	Subnet          *net.IPNet
 }
 
 var (
@@ -56,11 +59,18 @@ func Get() config {
 		flag.BoolVar(&cfg.EnableHTTPS, "s", false, "enable tls")
 		flag.StringVar(&cfg.ConfigPath, "config", "", "path to json config")
 		flag.StringVar(&cfg.ConfigPath, "c", "", "path to json config")
+		flag.StringVar(&cfg.TrustedSubnet, "t", "", "trusted subnets for stats")
 		flag.Parse()
 		if cfg.ConfigPath != "" {
 			parseConfigFile(cfg.ConfigPath)
 		}
 		parseEnvVars()
+		if cfg.TrustedSubnet != "" {
+			err := checkSubnet(cfg.TrustedSubnet)
+			if err != nil {
+				logger.Log.Fatal("wrong trusted subnet", zap.Error(err))
+			}
+		}
 		logger.Log.Debug("config", zap.Any("cfg", cfg))
 	})
 	return cfg
@@ -93,6 +103,9 @@ func parseConfigFile(path string) {
 	}
 	if fileCfg.EnableHTTPS && !cfg.EnableHTTPS {
 		cfg.EnableHTTPS = fileCfg.EnableHTTPS
+	}
+	if fileCfg.TrustedSubnet != "" && cfg.TrustedSubnet == "" {
+		cfg.TrustedSubnet = fileCfg.TrustedSubnet
 	}
 }
 
@@ -128,11 +141,23 @@ func parseEnvVars() {
 	if envPathToConfig := os.Getenv("CONFIG"); envPathToConfig != "" {
 		cfg.ConfigPath = envPathToConfig
 	}
+	if envTrustedSubnet := os.Getenv("TRUSTED_SUBNET"); envTrustedSubnet != "" {
+		cfg.TrustedSubnet = envTrustedSubnet
+	}
 }
 
 func checkBaseURL(url string) error {
 	if !strings.HasPrefix(url, "http") {
 		return errors.New("empty protocol for base url")
 	}
+	return nil
+}
+
+func checkSubnet(subnet string) error {
+	_, IPNet, err := net.ParseCIDR(subnet)
+	if err != nil {
+		return err
+	}
+	cfg.Subnet = IPNet
 	return nil
 }

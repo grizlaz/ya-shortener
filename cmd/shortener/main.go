@@ -103,6 +103,21 @@ func main() {
 		}()
 	}
 	logger.Log.Info("server started")
+
+	listen, err := net.Listen("tcp", ":3201")
+	if err != nil {
+		logger.Log.Sugar().Fatalf("error init listener for grpc servers", "error", err)
+	}
+	grpcServer, err := handler.NewGrpcServer(shortener, cfg.BaseURL, db, auditService)
+	if err != nil {
+		logger.Log.Sugar().Fatalf("error create grpc server", "error", err)
+	}
+	go func() {
+		if err := grpcServer.Serve(listen); err != nil {
+			logger.Log.Sugar().Fatalf("error running grpc server: %v", err)
+		}
+	}()
+	logger.Log.Info("grpc server started")
 	<-quit
 
 	shutdowCtx, shutdownCancel := context.WithTimeout(ctx, 5*time.Second)
@@ -111,8 +126,9 @@ func main() {
 	if err := srv.Shutdown(shutdowCtx); err != nil {
 		logger.Log.Fatal("error closing server", zap.Error(err))
 	}
+	grpcServer.GracefulStop()
 
-	logger.Log.Info("server stopped")
+	logger.Log.Info("all servers stopped")
 }
 
 func generateCrt() (string, string, error) {

@@ -157,3 +157,23 @@ func (p *postgres) DeleteUserUrls(ctx context.Context, deleteUrls ...model.Delet
 	_, err := p.db.ExecContext(ctx, query, args...)
 	return err
 }
+
+func (p *postgres) getCountQueryWithContext(ctx context.Context, query string) (int, error) {
+	var count int
+	row := p.db.QueryRowContext(ctx, query)
+	err := row.Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
+func (p *postgres) GetUsersCount(ctx context.Context) (int, error) {
+	query := "select count(distinct s.user_id) from shortening s"
+	return p.getCountQueryWithContext(ctx, query)
+}
+
+func (p *postgres) GetUrlsCount(ctx context.Context) (int, error) {
+	query := "select count(*) from shortening s"
+	return p.getCountQueryWithContext(ctx, query)
+}

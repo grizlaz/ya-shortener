@@ -17,6 +17,8 @@ type Storage interface {
 	Put(ctx context.Context, shortering model.Shortening) (*model.Shortening, error)
 	PutBatch(ctx context.Context, shortering *[]model.Shortening) (int64, error)
 	DeleteUserUrls(ctx context.Context, deleteUrls ...model.DeleteUrls) error
+	GetUrlsCount(ctx context.Context) (int, error)
+	GetUsersCount(ctx context.Context) (int, error)
 }
 
 type Service struct {
@@ -119,4 +121,12 @@ func (s *Service) flushDeleteUrls(ctx context.Context) {
 			return
 		}
 	}
+}
+
+func (s *Service) GetUrlsCount(ctx context.Context) (int, error) {
+	return s.storage.GetUrlsCount(ctx)
+}
+
+func (s *Service) GetUsersCount(ctx context.Context) (int, error) {
+	return s.storage.GetUsersCount(ctx)
 }
